@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>58-Maktab Davomat</title>
+  <link rel="icon" type="image/jpeg" href="58-maktab.jpg">
+  <link rel="apple-touch-icon" href="58-maktab.jpg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; padding-bottom: env(safe-area-inset-bottom); }
+    :where(.hidden) { display: none !important; }
+    .btn-active-yoq { background-color: #EF4444 !important; color: white !important; border-color: #EF4444 !important; }
+    .btn-active-sababli { background-color: #F59E0B !important; color: white !important; border-color: #F59E0B !important; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- MAXSUS XABAR VA TASDIQLASH OYNASI -->
+  <div id="dialog-modal" class="fixed inset-0 bg-slate-900/60 z-[110] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md p-6 border-t sm:border border-slate-200">
+      <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden"></div>
+      <h4 id="dialog-title" class="text-base font-black text-slate-800 mb-2 flex items-center gap-2"></h4>
+      <p id="dialog-msg" class="text-sm text-slate-600 mb-4 font-semibold leading-relaxed whitespace-pre-line"></p>
+      <div id="dialog-inputs-wrap" class="space-y-3 mb-4 hidden">
+        <input type="text" id="dialog-input" placeholder="F.I.Sh." class="w-full px-4 py-3.5 text-sm rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 font-bold">
+        <input type="tel" id="dialog-input-phone" placeholder="Ota-ona tel: +998901234567" class="w-full px-4 py-3.5 text-sm rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 font-bold">
+      </div>
+      <div class="flex gap-2 mt-2">
+        <button type="button" id="dialog-btn-cancel" class="flex-1 py-3.5 rounded-2xl text-sm font-bold text-slate-600 bg-slate-100 active:bg-slate-200 transition">Bekor qilish</button>
+        <button type="button" id="dialog-btn-ok" class="flex-1 py-3.5 rounded-2xl text-sm font-black text-white transition shadow-md">Tushunarli</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TELEGRAM HISOBOT -->
+  <div id="tg-report-modal" class="fixed inset-0 bg-slate-900/60 z-[105] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col border-t sm:border border-slate-200 overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-sky-50">
+        <div>
+          <h3 class="text-sm font-black text-sky-900 flex items-center gap-2"><i class="fa-brands fa-telegram text-sky-600 text-lg"></i> Telegram Kunlik Hisobot</h3>
+          <p class="text-[11px] text-sky-700 font-semibold">Matn xotiraga nusxalandi!</p>
+        </div>
+        <button type="button" onclick="closeTgReportModal()" class="w-8 h-8 rounded-full bg-white text-slate-600 flex items-center justify-center font-bold shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-4 overflow-y-auto flex-1 bg-slate-50">
+        <textarea id="tg-report-text" rows="12" readonly class="w-full p-3.5 text-xs rounded-2xl border border-slate-300 bg-white font-mono text-slate-800 leading-relaxed focus:outline-none"></textarea>
+      </div>
+      <div class="p-3 border-t border-slate-200 bg-white flex gap-2">
+        <button type="button" onclick="copyTgReportAgain()" class="flex-1 py-3.5 bg-sky-600 active:bg-sky-700 text-white rounded-2xl text-xs font-black shadow flex items-center justify-center gap-1.5"><i class="fa-solid fa-copy"></i> Nusxalash</button>
+        <button type="button" onclick="shareTgReport()" class="flex-1 py-3.5 bg-emerald-600 active:bg-emerald-700 text-white rounded-2xl text-xs font-black shadow flex items-center justify-center gap-1.5"><i class="fa-brands fa-telegram"></i> Telegramda ochish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. LOGIN EKRANI -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-[#0b3564] to-[#0f7a44]">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 sm:p-8">
+      <div class="text-center mb-5">
+        <img src="58-maktab.jpg" alt="58-Maktab" onerror="this.style.display='none'; document.getElementById('login-fallback-logo').classList.remove('hidden');" class="w-44 h-44 mx-auto object-contain rounded-2xl">
+        <div id="login-fallback-logo" class="hidden">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 text-white mb-3 text-2xl shadow-lg"><i class="fa-solid fa-school"></i></div>
+          <h1 class="text-2xl font-black text-slate-800">58-MAKTAB</h1>
+          <p class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-bold">Mobil Davomat Tizimi</p>
+        </div>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4" autocomplete="off">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5 ml-1">Login</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400"><i class="fa-solid fa-user"></i></span>
+            <input type="text" id="login-user" required placeholder="Loginni kiriting" autocapitalize="none" class="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-slate-50 text-slate-800 text-base font-semibold">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5 ml-1">Parol</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" id="login-pass" required placeholder="Parolni kiriting" autocomplete="off" class="w-full pl-11 pr-12 py-3.5 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-slate-50 text-slate-800 text-base font-semibold">
+            <button type="button" onclick="togglePw('login-pass')" class="absolute inset-y-0 right-0 px-4 text-slate-400 active:text-slate-600"><i class="fa-solid fa-eye"></i></button>
+          </div>
+        </div>
+        <div id="login-err" class="text-rose-600 text-xs font-bold hidden flex items-center gap-2 p-3 rounded-2xl bg-rose-50 border border-rose-200">
+          <i class="fa-solid fa-triangle-exclamation"></i> <span>Login yoki parol noto'g'ri!</span>
+        </div>
+        <button type="submit" class="w-full bg-[#0b3564] active:bg-[#082649] text-white font-black py-4 rounded-2xl shadow-lg transition active:scale-[0.98] text-base">Tizimga kirish</button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 text-center space-y-1">
+        <p class="text-[11px] font-bold text-slate-700">Idea: Nabijon Tojiddinov</p>
+        <p class="text-[11px] font-semibold text-slate-500">Creator: Erkinov Shaxzodbek</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ASOSIY MOBIL ILOVA EKRANI -->
+  <div id="app-screen" class="hidden flex-1 flex flex-col pb-40">
+    <header class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-30">
+      <div class="max-w-lg mx-auto px-4 py-2.5 flex justify-between items-center">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <img src="58-maktab.jpg" alt="58-Maktab" onerror="this.style.display='none'; document.getElementById('header-fallback-icon').classList.remove('hidden');" class="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0 shadow-sm bg-white">
+          <div id="header-fallback-icon" class="hidden w-9 h-9 rounded-xl bg-[#0b3564] text-white flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-graduation-cap"></i></div>
+          <div class="truncate">
+            <h2 class="text-sm font-black text-[#0b3564] leading-tight">58-MAKTAB</h2>
+            <p id="user-badge" class="text-[11px] text-slate-500 font-bold truncate"></p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="openPwModal()" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 active:bg-slate-200 flex items-center justify-center text-xs"><i class="fa-solid fa-key"></i></button>
+          <button type="button" onclick="handleLogout()" class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 active:bg-rose-100 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </header>
+
+    <!-- E'LONLAR BANNERI -->
+    <div id="announcement-banner" class="hidden max-w-lg mx-auto px-3 pt-3 w-full">
+      <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 shadow-sm flex items-start justify-between gap-2.5">
+        <div class="flex items-start gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 text-sm"><i class="fa-solid fa-bullhorn"></i></div>
+          <div>
+            <h4 class="text-[11px] font-black text-amber-900 uppercase">Maktab E'loni <span id="announcement-meta" class="font-semibold text-amber-700 normal-case"></span></h4>
+            <p id="announcement-text" class="text-xs font-semibold text-slate-800 mt-0.5 whitespace-pre-line"></p>
+          </div>
+        </div>
+        <div id="announcement-actions" class="hidden shrink-0 flex gap-1">
+          <button type="button" onclick="openAnnouncementModal()" class="w-7 h-7 rounded-lg bg-amber-200 text-amber-900 text-xs flex items-center justify-center"><i class="fa-solid fa-pen"></i></button>
+          <button type="button" onclick="deleteAnnouncement()" class="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 text-xs flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIREKTOR TOPSHIRIG'I BANNERI -->
+    <div id="director-task-banner" class="hidden max-w-lg mx-auto px-3 pt-3 w-full">
+      <div class="p-3.5 rounded-2xl bg-rose-50 border-2 border-rose-300 shadow-sm space-y-2.5">
+        <div class="flex items-start gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 text-sm"><i class="fa-solid fa-user-tie"></i></div>
+          <div class="flex-1">
+            <h4 class="text-[11px] font-black text-rose-900 uppercase">Direktor Ko'rsatmasi <span id="director-task-time" class="text-rose-600 font-bold normal-case"></span></h4>
+            <p id="director-task-text" class="text-xs font-bold text-slate-800 mt-0.5 whitespace-pre-line"></p>
+          </div>
+        </div>
+        <button type="button" onclick="dismissDirectorTask()" class="w-full py-2 bg-rose-600 active:bg-rose-700 text-white rounded-xl text-xs font-black shadow-sm"><i class="fa-solid fa-check mr-1"></i> Tushundim / Bajarildi</button>
+      </div>
+    </div>
+
+    <!-- SINF RAHBARI EKRANI -->
+    <main id="teacher-view" class="hidden max-w-lg mx-auto p-3 flex-1 w-full space-y-3">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex justify-between items-center">
+        <div>
+          <h3 id="teacher-class-title" class="text-lg font-black text-slate-800"></h3>
+          <p id="teacher-shift-info" class="text-xs font-bold text-blue-600 mt-0.5"></p>
+        </div>
+        <span class="text-[11px] font-black px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl" id="current-date-badge"></span>
+      </div>
+
+      <div id="teacher-locked-banner" class="hidden bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-circle-check"></i></div>
+          <div>
+            <h4 class="text-sm font-black text-emerald-900">Siz davomatni topshirib bo'lgansiz</h4>
+            <p id="teacher-locked-sub" class="text-[11px] text-emerald-700 font-semibold mt-0.5"></p>
+          </div>
+        </div>
+        <button type="button" onclick="enableTeacherEditMode()" class="w-full py-3 bg-amber-500 active:bg-amber-600 text-white rounded-xl text-xs font-black shadow flex items-center justify-center gap-1.5"><i class="fa-solid fa-pen-to-square"></i> Davomatni tahrirlash</button>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+        <div class="flex items-center justify-between text-xs font-bold" id="stats-counter"></div>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" id="teacher-search" oninput="renderStudentsList()" placeholder="O'quvchi ismini qidirish..." class="w-full pl-9 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+        </div>
+      </div>
+
+      <div id="students-list" class="space-y-2"></div>
+    </main>
+
+    <!-- SUZUVCHI YUBORISH TUGMASI -->
+    <div id="teacher-submit-wrap" class="hidden fixed bottom-[62px] inset-x-0 z-30 px-3 py-2 bg-gradient-to-t from-slate-100 via-slate-100/95 to-transparent pointer-events-none">
+      <div class="max-w-lg mx-auto pointer-events-auto">
+        <button type="button" id="btn-submit-att" onclick="submitAttendance()" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-black py-3.5 rounded-2xl shadow-xl transition active:scale-[0.98] flex items-center justify-center gap-2 text-sm sm:text-base"><i class="fa-solid fa-paper-plane"></i> Adminga yuborish</button>
+      </div>
+    </div>
+
+    <!-- DIREKTOR (BOSS) PANELI -->
+    <main id="director-view" class="hidden max-w-lg mx-auto p-3 flex-1 w-full space-y-3">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 uppercase">Sana:</span>
+          <span id="dir-date-label" class="text-xs font-black text-blue-600"></span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="shiftViewDate(-1)" class="w-10 h-9 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-700 text-xs font-black shrink-0"><i class="fa-solid fa-chevron-left"></i></button>
+          <button type="button" onclick="setQuickDate('today')" id="dir-btn-today" class="flex-1 h-9 rounded-xl text-xs font-black">Bugun</button>
+          <button type="button" onclick="setQuickDate('yesterday')" id="dir-btn-yesterday" class="flex-1 h-9 rounded-xl text-xs font-black">Kecha</button>
+          <input type="date" id="director-date" onchange="setViewDate(this.value)" class="w-32 h-9 text-xs px-2 rounded-xl border border-slate-300 bg-slate-50 font-bold">
+          <button type="button" onclick="shiftViewDate(1)" class="w-10 h-9 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-700 text-xs font-black shrink-0"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-center">
+          <p class="text-[10px] font-bold text-slate-400 uppercase">Davomat</p>
+          <p id="dir-overall-pct" class="text-xl font-black text-blue-600 mt-0.5">0%</p>
+          <p id="dir-overall-sub" class="text-[10px] font-semibold text-slate-500">0/0</p>
+        </div>
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-center">
+          <p class="text-[10px] font-bold text-emerald-600 uppercase">Topshirdi</p>
+          <p id="dir-submitted-count" class="text-xl font-black text-emerald-600 mt-0.5">0/0</p>
+          <p class="text-[10px] font-semibold text-slate-500">sinflar</p>
+        </div>
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-center">
+          <p class="text-[10px] font-bold text-rose-600 uppercase">Sababsiz</p>
+          <p id="dir-absent-count" class="text-xl font-black text-rose-600 mt-0.5">0</p>
+          <p class="text-[10px] font-semibold text-slate-500">o'quvchi</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" onclick="openDirectorTaskModal()" class="py-3 px-2 bg-rose-600 active:bg-rose-700 text-white rounded-2xl text-[11px] font-black shadow flex items-center justify-center gap-1"><i class="fa-solid fa-user-tie"></i> Topshiriq</button>
+        <button type="button" onclick="generateTelegramSummary()" class="py-3 px-2 bg-sky-600 active:bg-sky-700 text-white rounded-2xl text-[11px] font-black shadow flex items-center justify-center gap-1"><i class="fa-brands fa-telegram"></i> TG Hisobot</button>
+        <button type="button" onclick="exportToExcel()" class="py-3 px-2 bg-emerald-600 active:bg-emerald-700 text-white rounded-2xl text-[11px] font-black shadow flex items-center justify-center gap-1"><i class="fa-solid fa-file-excel"></i> Excel</button>
+      </div>
+
+      <div class="grid grid-cols-3 gap-1.5 bg-slate-200/80 p-1 rounded-2xl">
+        <button type="button" onclick="switchDirSubTab('classes')" id="dir-sub-classes" class="py-2 rounded-xl text-xs font-black bg-white text-slate-800 shadow-sm">Sinflar</button>
+        <button type="button" onclick="switchDirSubTab('ranking')" id="dir-sub-ranking" class="py-2 rounded-xl text-xs font-black text-slate-600">Reyting</button>
+        <button type="button" onclick="switchDirSubTab('redlist')" id="dir-sub-redlist" class="py-2 rounded-xl text-xs font-black text-slate-600">Qizil ro'yxat</button>
+      </div>
+
+      <div id="dir-sec-classes" class="space-y-2"></div>
+      <div id="dir-sec-ranking" class="hidden space-y-2"></div>
+      <div id="dir-sec-redlist" class="hidden bg-white rounded-2xl p-3 border border-slate-200 shadow-sm">
+        <p class="text-xs font-black text-rose-700 mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Ko'p sababsiz dars qoldirganlar</p>
+        <div id="dir-redlist-box" class="divide-y divide-slate-100"></div>
+      </div>
+    </main>
+
+    <!-- ADMIN EKRANI -->
+    <main id="admin-view" class="hidden max-w-lg mx-auto p-3 flex-1 w-full space-y-3">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 uppercase">Sana:</span>
+          <span id="admin-date-label" class="text-xs font-black text-blue-600"></span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="shiftViewDate(-1)" class="w-10 h-9 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-700 text-xs font-black shrink-0"><i class="fa-solid fa-chevron-left"></i></button>
+          <button type="button" onclick="setQuickDate('today')" id="admin-btn-today" class="flex-1 h-9 rounded-xl text-xs font-black">Bugun</button>
+          <button type="button" onclick="setQuickDate('yesterday')" id="admin-btn-yesterday" class="flex-1 h-9 rounded-xl text-xs font-black">Kecha</button>
+          <input type="date" id="admin-date" onchange="setViewDate(this.value)" class="w-32 h-9 text-xs px-2 rounded-xl border border-slate-300 bg-slate-50 font-bold">
+          <button type="button" onclick="shiftViewDate(1)" class="w-10 h-9 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-700 text-xs font-black shrink-0"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-1.5 bg-slate-200/80 p-1 rounded-2xl">
+        <button type="button" onclick="filterShift('all')" id="tab-all" class="py-2 rounded-xl text-xs font-black bg-white text-blue-600 shadow-sm">Barchasi</button>
+        <button type="button" onclick="filterShift('1')" id="tab-1" class="py-2 rounded-xl text-xs font-black text-slate-600">1-Smena</button>
+        <button type="button" onclick="filterShift('2')" id="tab-2" class="py-2 rounded-xl text-xs font-black text-slate-600">2-Smena</button>
+      </div>
+
+      <div class="grid grid-cols-4 gap-1.5">
+        <button type="button" onclick="generateTelegramSummary()" class="py-2.5 px-1.5 bg-sky-600 active:bg-sky-700 text-white rounded-xl text-[11px] font-black shadow flex items-center justify-center gap-1"><i class="fa-brands fa-telegram"></i> TG</button>
+        <button type="button" onclick="openAddTeacherModal()" class="py-2.5 px-1.5 bg-indigo-600 active:bg-indigo-700 text-white rounded-xl text-[11px] font-black shadow flex items-center justify-center gap-1"><i class="fa-solid fa-plus"></i> Rahbar</button>
+        <button type="button" onclick="exportToExcel()" class="py-2.5 px-1.5 bg-emerald-600 active:bg-emerald-700 text-white rounded-xl text-[11px] font-black shadow flex items-center justify-center gap-1"><i class="fa-solid fa-file-excel"></i> Excel</button>
+        <button type="button" onclick="clearAllAttendance()" class="py-2.5 px-1.5 bg-rose-50 active:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl text-[11px] font-black flex items-center justify-center gap-1"><i class="fa-solid fa-trash-can"></i> Toza</button>
+      </div>
+
+      <div id="admin-classes-cards" class="space-y-2.5"></div>
+    </main>
+
+    <!-- OWNER (EGA) EKRANI -->
+    <main id="owner-view" class="hidden max-w-lg mx-auto p-3 flex-1 w-full space-y-3">
+      <div class="grid grid-cols-2 gap-1.5 bg-slate-200/80 p-1 rounded-2xl">
+        <button type="button" onclick="switchOwnerTab('management')" id="owner-tab-manage" class="py-2.5 rounded-xl text-xs font-black bg-white text-blue-600 shadow-sm">Foydalanuvchilar</button>
+        <button type="button" onclick="switchOwnerTab('attendance')" id="owner-tab-att" class="py-2.5 rounded-xl text-xs font-black text-slate-600">Maktab Davomati</button>
+      </div>
+
+      <div id="owner-sec-manage" class="space-y-4">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-black text-slate-800"><i class="fa-solid fa-shield text-indigo-600 mr-1"></i> Rahbariyat / Adminlar</h3>
+            <button type="button" onclick="openAdminModal()" class="text-xs font-black bg-indigo-600 text-white px-3 py-1.5 rounded-xl"><i class="fa-solid fa-plus"></i> Qo'shish</button>
+          </div>
+          <div id="owner-admins-list" class="divide-y divide-slate-100"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-black text-slate-800"><i class="fa-solid fa-chalkboard-user text-blue-600 mr-1"></i> Sinf Rahbarlari</h3>
+            <button type="button" onclick="openAddTeacherModal()" class="text-xs font-black bg-blue-600 text-white px-3 py-1.5 rounded-xl"><i class="fa-solid fa-plus"></i> Qo'shish</button>
+          </div>
+          <div id="owner-teachers-list" class="divide-y divide-slate-100"></div>
+        </div>
+      </div>
+
+      <div id="owner-sec-att" class="hidden space-y-3">
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Sana:</span>
+            <span id="owner-date-label" class="text-xs font-black text-blue-600"></span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="shiftViewDate(-1)" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 text-xs font-black"><i class="fa-solid fa-chevron-left"></i></button>
+            <button type="button" onclick="setQuickDate('today')" id="owner-btn-today" class="flex-1 h-9 rounded-xl text-xs font-black">Bugun</button>
+            <button type="button" onclick="setQuickDate('yesterday')" id="owner-btn-yesterday" class="flex-1 h-9 rounded-xl text-xs font-black">Kecha</button>
+            <input type="date" id="owner-date" onchange="setViewDate(this.value)" class="w-32 h-9 text-xs px-2 rounded-xl border border-slate-300 bg-slate-50 font-bold">
+            <button type="button" onclick="shiftViewDate(1)" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 text-xs font-black"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div id="owner-classes-cards" class="space-y-2.5"></div>
+      </div>
+    </main>
+
+    <!-- MUALLIFLIK HUQUQI (FOOTER) -->
+    <footer class="max-w-lg mx-auto w-full px-4 pt-3 pb-2 text-center">
+      <p class="text-[11px] text-slate-500 font-bold tracking-wide">Idea: Nabijon Tojiddinov | Creator: Erkinov Shaxzodbek</p>
+    </footer>
+
+    <!-- PASTKI NAVIGATSIYA PANELI -->
+    <nav class="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur border-t border-slate-200 z-40 shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
+      <div id="bottom-nav-items" class="max-w-lg mx-auto flex justify-around items-center py-2 px-2"></div>
+    </nav>
+  </div>
+
+  <!-- MODAL: DIREKTOR TOPSHIRIG'I -->
+  <div id="director-task-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md p-6 border-t sm:border border-slate-200">
+      <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden"></div>
+      <h4 class="text-sm font-black text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-user-tie text-rose-600"></i> Sinf rahbariga ko'rsatma</h4>
+      <div class="space-y-3 mb-4">
+        <select id="dir-task-class" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold"></select>
+        <textarea id="dir-task-input" rows="3" placeholder="Topshiriqni yozing..." class="w-full p-3.5 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-medium"></textarea>
+      </div>
+      <div class="flex gap-2">
+        <button type="button" onclick="closeDirectorTaskModal()" class="flex-1 py-3.5 rounded-2xl text-xs font-bold text-slate-600 bg-slate-100">Bekor qilish</button>
+        <button type="button" onclick="sendDirectorTask()" class="flex-1 py-3.5 rounded-2xl text-xs font-black text-white bg-rose-600 shadow-md">Yuborish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: O'QUVCHILAR -->
+  <div id="manage-students-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col border-t sm:border border-slate-200 overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 id="manage-title" class="text-sm font-black text-slate-800">O'quvchilar va Tel. raqamlar</h3>
+        <button type="button" onclick="closeManageStudentsModal()" class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-4 overflow-y-auto space-y-3 flex-1">
+        <div class="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+          <input type="text" id="new-student-name" placeholder="O'quvchi F.I.Sh." class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 bg-white font-bold">
+          <div class="flex gap-2">
+            <input type="tel" id="new-student-phone" placeholder="Tel: +998901234567" class="flex-1 px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 bg-white font-bold">
+            <button type="button" onclick="addSingleStudent()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black shadow">Qo'shish</button>
+          </div>
+        </div>
+        <div class="p-3 bg-blue-50/70 rounded-2xl border border-blue-200">
+          <label class="block text-xs font-black text-blue-900 mb-1"><i class="fa-solid fa-file-import mr-1"></i> Fayldan yuklash (.txt / .csv)</label>
+          <input type="file" id="student-file-input" accept=".txt,.csv" onchange="handleStudentFileUpload(event)" class="text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-blue-600 file:text-white">
+        </div>
+        <ul id="modal-manage-students-list" class="divide-y divide-slate-100 border border-slate-200 rounded-2xl bg-white"></ul>
+      </div>
+      <div class="p-3 border-t border-slate-200 bg-slate-50">
+        <button type="button" onclick="closeManageStudentsModal()" class="w-full py-3.5 bg-slate-800 text-white rounded-2xl text-xs font-black shadow">Yopish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SINF RAHBARI -->
+  <div id="teacher-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md p-6 border-t sm:border border-slate-200 max-h-[92vh] overflow-y-auto">
+      <h4 id="teacher-modal-title" class="text-sm font-black text-slate-800 mb-4">Sinf Rahbari</h4>
+      <input type="hidden" id="teacher-modal-old-login">
+      <div class="space-y-3">
+        <input type="text" id="teacher-modal-class" placeholder="Sinf (8-A)" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+        <input type="text" id="teacher-modal-name" placeholder="O'qituvchi F.I.Sh." class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+        <select id="teacher-modal-shift" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+          <option value="1">1-smena (Ertalab)</option>
+          <option value="2">2-smena (Tushdan keyin)</option>
+        </select>
+        <input type="text" id="teacher-modal-login" autocapitalize="none" placeholder="Login" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+        <input type="text" id="teacher-modal-pass" placeholder="Parol" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+      </div>
+      <div class="flex gap-2 mt-5">
+        <button type="button" onclick="closeTeacherModal()" class="flex-1 py-3.5 rounded-2xl text-xs font-bold text-slate-600 bg-slate-100">Bekor qilish</button>
+        <button type="button" onclick="saveTeacherUser()" class="flex-1 py-3.5 rounded-2xl text-xs font-black text-white bg-blue-600 shadow-md">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADMIN / DIREKTOR -->
+  <div id="admin-user-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md p-6 border-t sm:border border-slate-200">
+      <h4 id="admin-modal-title" class="text-sm font-black text-slate-800 mb-4">Rahbar / Admin</h4>
+      <input type="hidden" id="admin-edit-key">
+      <div class="space-y-3">
+        <input type="text" id="admin-modal-name" placeholder="F.I.Sh." class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+        <select id="admin-modal-role" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+          <option value="admin">Maktab Admini (Operator)</option>
+          <option value="director">Direktor / Rahbariyat (Boss)</option>
+        </select>
+        <input type="text" id="admin-modal-login" autocapitalize="none" placeholder="Login" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+        <input type="text" id="admin-modal-pass" placeholder="Parol" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+      </div>
+      <div class="flex gap-2 mt-5">
+        <button type="button" onclick="closeAdminModal()" class="flex-1 py-3.5 rounded-2xl text-xs font-bold text-slate-600 bg-slate-100">Bekor qilish</button>
+        <button type="button" onclick="saveAdminUser()" class="flex-1 py-3.5 rounded-2xl text-xs font-black text-white bg-indigo-600 shadow-md">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SABABLI IZOHI -->
+  <div id="reason-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md p-6 border-t sm:border border-slate-200">
+      <h4 class="text-sm font-black text-slate-800 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-note-sticky text-amber-500"></i> Kelmaganlik sababi</h4>
+      <p id="reason-student-name" class="text-xs text-slate-500 mb-3 font-bold"></p>
+      <input type="text" id="reason-input" maxlength="200" placeholder="Sababni kiriting" class="w-full px-4 py-3.5 text-sm rounded-2xl border border-slate-300 mb-4 bg-slate-50 font-bold">
+      <div class="flex gap-2">
+        <button type="button" onclick="closeReasonModal()" class="flex-1 py-3.5 rounded-2xl text-xs font-bold text-slate-600 bg-slate-100">Bekor qilish</button>
+        <button type="button" onclick="saveReason()" class="flex-1 py-3.5 rounded-2xl text-xs font-black text-white bg-amber-600 shadow-md">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DAVOMATNI KO'RISH -->
+  <div id="class-detail-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col border-t sm:border border-slate-200 overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <div>
+          <h3 id="modal-class-title" class="text-base font-black text-slate-800"></h3>
+          <p id="modal-class-sub" class="text-xs text-slate-500 font-medium"></p>
+        </div>
+        <button type="button" onclick="closeClassModal()" class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="grid grid-cols-3 gap-2 p-3 bg-slate-100/70 border-b border-slate-200 text-center text-xs font-black">
+        <div class="p-2 bg-white text-slate-700 rounded-xl border border-slate-200">Jami: <span id="modal-stat-total" class="text-sm">0</span></div>
+        <div class="p-2 bg-rose-50 text-rose-700 rounded-xl border border-rose-200">Yo'q: <span id="modal-stat-yoq" class="text-sm">0</span></div>
+        <div class="p-2 bg-amber-50 text-amber-700 rounded-xl border border-amber-200">Sababli: <span id="modal-stat-sababli" class="text-sm">0</span></div>
+      </div>
+      <div id="modal-edit-history" class="hidden mx-3 mt-3 p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-xs">
+        <h5 class="font-black text-amber-900 flex items-center gap-1.5 mb-1.5"><i class="fa-solid fa-clock-rotate-left text-amber-600"></i> Tahrirlash tarixi:</h5>
+        <ul id="modal-edit-history-list" class="space-y-1.5 text-amber-950 font-medium max-h-28 overflow-y-auto"></ul>
+      </div>
+      <div id="modal-students-list" class="p-3 sm:p-4 overflow-y-auto flex-1 space-y-3"></div>
+      <div class="p-3 border-t border-slate-200 bg-slate-50">
+        <button type="button" onclick="closeClassModal()" class="w-full py-3.5 bg-slate-800 text-white rounded-2xl text-xs font-black shadow">Yopish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: QURILMALAR -->
+  <div id="devices-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col border-t sm:border border-slate-200 overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 class="text-sm font-black text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-emerald-600"></i> Ulangan qurilmalar</h3>
+        <button type="button" onclick="closeDevicesModal()" class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-3 bg-amber-50 border-b border-amber-200 text-[11px] text-amber-800 font-semibold leading-relaxed">
+        <i class="fa-solid fa-lock text-amber-600 mr-1"></i> Xavfsizlik: Notanish qurilmani faqat <b>1 soat (60 daqiqa)</b> o'tgach chiqarish mumkin.
+      </div>
+      <div class="p-4 overflow-y-auto flex-1"><ul id="devices-list" class="divide-y divide-slate-100"></ul></div>
+      <div class="p-3 border-t border-slate-200 bg-slate-50"><button type="button" onclick="closeDevicesModal()" class="w-full py-3.5 bg-slate-800 text-white rounded-2xl text-xs font-black">Yopish</button></div>
+    </div>
+  </div>
+
+  <!-- MODAL: CHAT -->
+  <div id="chat-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-lg h-[88vh] flex flex-col border-t sm:border border-slate-200 overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 class="text-sm font-black text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-comments text-indigo-600"></i> 58-Maktab Chati</h3>
+        <button type="button" onclick="closeChatModal()" class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50/50"></div>
+      <form onsubmit="sendChatMessage(event)" class="p-3 border-t border-slate-200 bg-white flex items-center gap-2">
+        <input type="text" id="chat-input" placeholder="Xabar yozing..." required autocomplete="off" class="flex-1 px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-medium">
+        <button type="submit" class="bg-indigo-600 active:bg-indigo-700 text-white w-12 h-12 rounded-2xl text-sm font-black shadow flex items-center justify-center shrink-0"><i class="fa-solid fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: E'LON -->
+  <div id="announcement-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md p-6 border-t sm:border border-slate-200">
+      <h4 class="text-sm font-black text-slate-800 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-bullhorn text-amber-500"></i> Yangi e'lon</h4>
+      <textarea id="announcement-input" rows="4" placeholder="E'lon matnini kiriting..." class="w-full p-4 text-sm rounded-2xl border border-slate-300 mb-4 bg-slate-50 font-medium"></textarea>
+      <div class="flex gap-2">
+        <button type="button" onclick="closeAnnouncementModal()" class="flex-1 py-3.5 rounded-2xl text-xs font-bold text-slate-600 bg-slate-100">Bekor qilish</button>
+        <button type="button" onclick="saveAnnouncement()" class="flex-1 py-3.5 rounded-2xl text-xs font-black text-white bg-amber-600 shadow-md">E'lon qilish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PAROL -->
+  <div id="pw-modal" class="fixed inset-0 bg-slate-900/70 z-[60] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-sm p-6 border-t sm:border border-slate-200">
+      <h4 class="text-sm font-black text-slate-800 mb-3 flex items-center gap-1.5"><i class="fa-solid fa-key text-blue-600"></i> Parolni o'zgartirish</h4>
+      <div class="space-y-3">
+        <input type="password" id="pw-old" placeholder="Joriy parol" autocomplete="new-password" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+        <input type="password" id="pw-new" placeholder="Yangi parol (kamida 6 belgi)" autocomplete="new-password" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+        <input type="password" id="pw-new2" placeholder="Yangi parolni takrorlang" autocomplete="new-password" class="w-full px-4 py-3 text-sm rounded-2xl border border-slate-300 bg-slate-50 font-bold">
+      </div>
+      <div class="flex gap-2 mt-5">
+        <button type="button" onclick="closePwModal()" class="flex-1 py-3.5 rounded-2xl text-xs font-bold text-slate-600 bg-slate-100">Bekor qilish</button>
+        <button type="button" onclick="savePassword()" class="flex-1 py-3.5 rounded-2xl text-xs font-black text-white bg-blue-600 shadow-md">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const $ = id => document.getElementById(id);
+    const pad2 = n => String(n).padStart(2,'0');
+
+    let dialogResolve = null;
+    function customAlert(title, msg, type = 'success') {
+      return new Promise(resolve => {
+        dialogResolve = resolve;
+        let icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-500"></i>' : (type === 'error' ? '<i class="fa-solid fa-circle-xmark text-rose-500"></i>' : '<i class="fa-solid fa-circle-info text-blue-500"></i>');
+        $('dialog-title').innerHTML = `${icon} <span>${title}</span>`;
+        $('dialog-msg').innerHTML = msg;
+        $('dialog-inputs-wrap').classList.add('hidden');
+        $('dialog-btn-cancel').classList.add('hidden');
+        const btnOk = $('dialog-btn-ok');
+        btnOk.className = `w-full py-3.5 rounded-2xl text-sm font-black text-white active:opacity-90 transition shadow-md ${type === 'error' ? 'bg-rose-600' : (type === 'warn' ? 'bg-amber-500' : 'bg-emerald-600')}`;
+        btnOk.textContent = 'Tushunarli';
+        $('dialog-modal').classList.remove('hidden');
+      });
+    }
+    function customConfirm(title, msg, btnColor = 'bg-blue-600') {
+      return new Promise(resolve => {
+        dialogResolve = resolve;
+        $('dialog-title').innerHTML = `<i class="fa-solid fa-circle-question text-blue-500"></i> <span>${title}</span>`;
+        $('dialog-msg').innerHTML = msg;
+        $('dialog-inputs-wrap').classList.add('hidden');
+        $('dialog-btn-cancel').classList.remove('hidden');
+        const btnOk = $('dialog-btn-ok');
+        btnOk.className = `flex-1 py-3.5 rounded-2xl text-sm font-black text-white active:opacity-90 transition shadow-md ${btnColor}`;
+        btnOk.textContent = 'Tasdiqlash';
+        $('dialog-modal').classList.remove('hidden');
+      });
+    }
+    function customEditStudentPrompt(nameVal = '', phoneVal = '') {
+      return new Promise(resolve => {
+        dialogResolve = resolve;
+        $('dialog-title').innerHTML = `<i class="fa-solid fa-pen text-blue-500"></i> <span>O'quvchini tahrirlash</span>`;
+        $('dialog-msg').textContent = "O'quvchi ismi va ota-ona telefon raqamini kiriting:";
+        $('dialog-input').value = nameVal;
+        $('dialog-input-phone').value = phoneVal;
+        $('dialog-inputs-wrap').classList.remove('hidden');
+        $('dialog-btn-cancel').classList.remove('hidden');
+        const btnOk = $('dialog-btn-ok');
+        btnOk.className = `flex-1 py-3.5 rounded-2xl text-sm font-black text-white bg-blue-600 active:bg-blue-700 transition shadow-md`;
+        btnOk.textContent = 'Saqlash';
+        $('dialog-modal').classList.remove('hidden');
+        setTimeout(() => $('dialog-input').focus(), 50);
+      });
+    }
+    function closeDialog(result) {
+      $('dialog-modal').classList.add('hidden');
+      if (dialogResolve) { dialogResolve(result); dialogResolve = null; }
+    }
+    $('dialog-btn-cancel').onclick = () => closeDialog(null);
+    $('dialog-btn-ok').onclick = () => {
+      if (!$('dialog-inputs-wrap').classList.contains('hidden')) closeDialog({ name: $('dialog-input').value, phone: $('dialog-input-phone').value });
+      else closeDialog(true);
+    };
+
+    function sha256(ascii){
+      function rr(v,a){return (v>>>a)|(v<<(32-a));}
+      var i,j,maxWord=Math.pow(2,32),result='',words=[],bitLen=ascii.length*8;
+      var hash=sha256.h=sha256.h||[],k=sha256.k=sha256.k||[],pc=k.length,comp={};
+      for(var cand=2;pc<64;cand++){
+        if(!comp[cand]){
+          for(i=0;i<313;i+=cand)comp[i]=cand;
+          hash[pc]=(Math.pow(cand,.5)*maxWord)|0;
+          k[pc++]=(Math.pow(cand,1/3)*maxWord)|0;
+        }
+      }
+      ascii+='\x80';
+      while(ascii.length%64-56)ascii+='\x00';
+      for(i=0;i<ascii.length;i++){j=ascii.charCodeAt(i);if(j>>8)return;words[i>>2]|=j<<((3-i)%4)*8;}
+      words[words.length]=((bitLen/maxWord)|0);
+      words[words.length]=bitLen;
+      for(j=0;j<words.length;){
+        var w=words.slice(j,j+=16),old=hash;
+        hash=hash.slice(0,8);
+        for(i=0;i<64;i++){
+          var w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];
+          var t1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+(w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]+(rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
+          var t2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+          hash=[(t1+t2)|0].concat(hash);
+          hash[4]=(hash[4]+t1)|0;
+        }
+        for(i=0;i<8;i++)hash[i]=(hash[i]+old[i])|0;
+      }
+      for(i=0;i<8;i++)for(j=3;j+1;j--){var b=(hash[i]>>(j*8))&255;result+=((b<16)?0:'')+b.toString(16);}
+      return result;
+    }
+    function sha256utf8(str){ let bin=''; new TextEncoder().encode(str).forEach(b=>bin+=String.fromCharCode(b)); return sha256(bin); }
+    function hashPass(salt, pass){ return sha256utf8('school58|' + salt + '|' + pass); }
+
+    const K_USERS = 'school58_v16_users';
+    const K_STUDENTS = 'school58_v16_students';
+    const K_ATT = 'school58_v16_att_';
+    const K_SESSION = 'school58_v16_session';
+    const K_DEVICES = 'school58_v16_devices_';
+    const K_DEVICE_ID = 'school58_v16_this_device';
+    const K_ANNOUNCE = 'school58_v16_announcement';
+    const K_CHAT = 'school58_v16_chat';
+    const K_DIR_TASKS = 'school58_v16_dir_tasks';
+
+    const DEFAULT_STUDENTS = {
+      "9-B": ["NOMONJONOV NAJOTNUR SAFARALI O'G'LI", "QURBONOV MUHAMMADZOXID IQBOLJON O'G'LI", "VALIJONOV YAHYOBEK MUZAFFAR O'G'LI", "NIZOMIDINOV OYATULLA NASIRULLO O'G'LI", "MURODJONOV BEHRUZBEK MASHRABJON O'G'LI", "MADAMINOV AZIZBEK OLTINBOY O'G'LI", "BAXODIROV IMRONBEK QOBILJON O'G'LI", "KARIMJONOV DILSHODBEK SHERZOD O'G'LI", "KENJABOYEV JONIBEK IQBOLJON O'G'LI", "SHOKIROV SHOXRUXBEK MARDONBEK O'G'LI", "SOLIJONOV LAZIZXON NARIMONJONOVICH", "NIZOMOV MUHAMMADYUSUF INOMJON O'G'LI", "ANVARJONOV HOJIAKBAR ULUG'BEK O'G'LI", "AHMADJONOVA NIGINA QOBILJON QIZI", "SOBIRJONOVA MUNTAZAM SODIQJON QIZI", "MIRZAKARIMOVA CHAROS ULUG'BEK QIZI", "TOJALIYEVA DIYORA ABDULAZIZ QIZI", "AXMATJONOVA ZARNIGOR SOXIBJON QIZI", "HAKIMOVA MOXLAROY ULUG'BEK QIZI", "ASQARALIYEVA RUXSHONA NIZOMJON QIZI", "SHERALIYEVA MUXLISAXON DAVRONALI QIZI", "TOJALIYEVA DILNAVOZ TO'LQINJON QIZI", "YOQUBJONOVA MUSHTARIYBONU NABIJON QIZI", "AMINJONOVA GULNOZAXON ZAFARJON QIZI", "G'AFFOROVA MUSLIMAXON MUTALLIBJON QIZI", "HASANBAYEVA MARYAMXON XUDOBERDI QIZI"],
+      "9-A": ["HOSHIMJONOV SAYDULLA ABDUVOXID O'G'LI", "SAYFUDDINOV MUHAMMADSODIQ MARDONBEK O'G'LI", "MAXSUDJONOV SHOXJAXON QILICHBEK O'G'LI", "PULATOV AZIZBEK ZAFARJON O'G'LI", "XUDOYORJONOV DAVLATBEK DONIYOR O'G'LI", "ISMOILOVA GAVHAROY ABDUMALIK QIZI", "MAMIRJONOV ASRORBEK ABRORJON O'G'LI", "TOLIBOV HOJIAKBAR DONIYOR O'G'LI", "XOSHIMOV G'AFURJON ABDUVOXOB O'G'LI", "DADAXONOV LAZIZBEK SAYIDJON O'G'LI", "HABIBIDDINOV ISLOMJON ISMADIYOR O'G'LI", "ISMOILOV NURMUHAMMAD SHARIBJON O'G'LI", "SALIMJONOV AFZALBEK SAIDJON O'G'LI", "RAVSHANOV JO'RABEK UMIDJON O'G'LI", "NU'MONJONOVA NOZIMAXON IKROMJON QIZI", "SIDIQOVA SADBARXON SOXIBJON QIZI", "IBROHIMOVA MUHSINA YAQUBJON QIZI", "YURSUNALIYEVA MARHABOXON RUSTAMJON QIZI", "ABDIRASHIDOVA DONOXON IQBOLJON QIZI", "MUXTORIDDINOVA DILOROMXON DILMUROD QIZI", "SOLIYEVA ZAHROXON HUSANBOY QIZI", "MAMIRJONOVA MARJONA AKMALJON QIZI", "ISMOILJONOVA SARVINOZXON AKMALJON QIZI", "RAXIMOVA MUXLISAXON ABDUKAYIMJON QIZI", "BAXTIYOROVA GULSANAMXON ILHOMJON QIZI", "BAXTIYOROVA SARVINOZXON DILSHODJON QIZI", "MASIRJONOVA GULNORAXON ILYOSJON QIZI"],
+      "8-B": ["MUROTJONOV ABDULLOH ZUXRIDDIN O'G'LI", "QODIROV JAMSHID SHERALI O'G'LI", "TOJALIYEV NOZIMJON ABDULLAJON O'G'LI", "ISKANDAROV JAXONGIR ANVARJON O'G'LI", "ORIBOV ISMOILJON SHOIRJON O'G'LI", "QOBILOV SHAXRIYOR UMIDJON O'G'LI", "BOTIRALIYEV MUHAMMADALI NAVRUZALI O'G'LI", "IBROXIMOV BEXRUZBEK O'KTAMJON O'G'LI", "TURDALIYEV IJODBEK DILSHOD O'G'LI", "ABDULXAMITOV NORMUHAMMAD ELIYOR O'G'LI", "JAMOLIDDINOV BEXRUZBEK QODIRJON O'G'LI", "MAMASOBIROV IXTIYORJON BAXTIYORJON O'G'LI", "KARIMOV SHAXOBIDDIN MARUFJON O'G'LI", "BOZORBOYEV SHOXJAXON MAXSADJON O'G'LI", "RUSTAMOV OTABEK TEMUR O'G'LI", "JUMADILLOYEV OZODBEK ELYORBEK O'G'LI", "ERKINOV SHAXZODBEK ALIMARDON O'G'LI", "TOJALIYEV DIYORBEK TO'LQINJON O'G'LI", "MAVLONJONOV DIYORBEK SOXIBJON O'G'LI", "NAZIROVA RO'ZIXON INOMJON QIZI", "MIRZAYEVA ZARNIGOR ZARIBJON QIZI", "OLIMJONOVA SARVINOZ SARDORBEK QIZI", "ABDUSALOMOVA UMIDAXON NODIR QIZI", "KARIMJONOVA GULSHODA BEGZOD QIZI", "VOXOBJONOVA MOXICHEXRA AXADJON QIZI", "BOZORBOYEVA GULBAXOR AZIZBEK QIZI", "YOQUBJONOVA SHAXRIZODA LOCHINBEK QIZI", "XOMIDOVA DILNOZAXON FARXODJON QIZI", "TOPVALDIYEVA FARANGIZ BAKIRJON QIZI"],
+      "8-A": ["UMARALIYEV ABDUSATTOR AKBARALI O'G'LI", "ABDUNAZAROV JAMSHIDBEK ABDUJABBOR O'G'LI", "IBROHIMOV HASANBOY XOLMATJON O'G'LI", "SOHIBJONOV SHERZODBEK ALISHER O'G'LI", "KOMILOV MANSURBEK MIRZARAXIM O'G'LI", "PO'LATOV ABDULLOH DAVLATJON O'G'LI", "ALIJONOV ASILBEK DILMUROD O'G'LI", "RO'ZMATOV NURMUHAMMAD MIRZARAXIM O'G'LI", "SALIMJONOV SHOXRUZBEK SOXIBJON O'G'LI", "MAMIRJONOV AHMADALI MARUFJON O'G'LI", "TOYIRJONOV OYATULLOX SUBXONALI O'G'LI", "MO'YDINOV SANJARBEK TO'LQINJON O'G'LI", "TURG'UNBOYEV ABDURAXMON IKROMJON O'G'LI", "MIRKOMILOV MUHAMMADALI ABDUSOLI O'G'LI", "ALIJONOV SHAHBOZBEK ANVARJON O'G'LI", "DILSHODOVA MADINABONU OYBEK QIZI", "ALIJONOVA FERUZABONU FAXRIDDIN QIZI", "IBROHIMOVA ZUHRAXON XOLMATJON QIZI", "IBROHIMJONOVA SHOXSANAM SHOIRJON QIZI", "QODIROVA ROZIYA OTABEK QIZI", "PO'LATJONOVA DURDONAXON BUNYODJON QIZI", "ALIJONOVA MADINABONU ILHOMJON QIZI", "ZOKIROVA YURSUNOY ULUG'BEK QIZI", "TO'LQINOVA MADINABONU FARRUX QIZI", "TO'XTANAZAROVA E'ZOZAXON AVAZBEK QIZI", "QOSIMJONOVA MASHHURAXON O'TKIRBEK QIZI", "JIYANOVA MOXLAROY ARABJON QIZI", "MUQUMJONOVA MOXLAROY JAMSHIDBEK QIZI", "HAKIMJONOVA SARVINOZ SOHIBJON QIZI"],
+      "7-B": ["NO'MONJONOV ILHOMJON IKROMJON O'G'LI", "SOTIBOLDIYEV MUHAMMADZIYO SALOHIDDIN O'G'LI", "KARIMJONOV SARDORBEK BAHROMBEK O'G'LI", "NURALIYEV SHOHRUHMIRZO QUDRATILLO O'G'LI", "NABIJONOV ABDULBOSIT SODIQJON O'G'LI", "SOBIRJONOV OYATULLOH DILMUROD O'G'LI", "TURSUNBOYEVA FARANGIZ IN'OMJON QIZI", "YIGITALIYEVA MOHLAROY AKMALJON QIZI", "SOLIJONOVA OYSANAM NARIMONJON QIZI", "ABDUBANNOBOVA ASILAXON DILMUROD QIZI", "TURDALIYEVA TAMANNO ABRORJON QIZI", "QO'SHAQOVA BARNOXON IQBOLJON QIZI", "MIRZAJONOVA DILSHODAXON MUXTORJON QIZI", "G'ULOMJONOVA PARIZODA QAHHORALI QIZI", "VALIJONOVA MUQADDAMXON MIRZOHID QIZI", "ANVAROVA SAMARBONU BUNYOD QIZI", "ODILJONOVA SADOQATXON EKKINJON QIZI", "TURG'UNOVA MUXLISAXON HAMIDJON QIZI", "O'RINBOYEVA DILNURA SHERMATJON QIZI", "ABDUVAHHOBOVA FARZONAXON ABDUBAKIR QIZI", "SHOKIROVA HAYOTXON HUSANBOY QIZI", "MIRZAOLIMOVA DURDONAXON SODIQJON QIZI", "FOZILJONOVA ZUBAYDA BEKZOD QIZI", "NOSIROVA MADINABONU ILHOMJON QIZI", "RAHIMJONOVA MARJONA ABDULATIF QIZI", "JAMOLIDDINOVA HUSHNOZAXON QAHRAMONJON QIZI", "VALIJONOVA IFORABEGIM AHRORJON QIZI", "TURSUNOVA SHAHODATXON AKMALJON QIZI", "TURSUNOVA SHAHINABEGIM MUHRIDDIN QIZI", "HAYDARALIYEVA MOHINUR BAHROMJON QIZI", "TOLIPOVA LOBARXON ILHOMJON QIZI"],
+      "7-A": ["AKRAMOV ABDUSAMADJON ASILBEK O'G'LI", "YOQUBJONOV G'AYRATJON G'OFURJONOVICH", "HALIMOV ABDUSALIM LOCHINBEK O'G'LI", "MA'RUFJONOV OZODBEK NODIRBEK O'G'LI", "MO'SAYEV MUHAMMADALI DONIYORJON O'G'LI", "MIRKOMILOV ALIYORBEK ABDUG'ANI O'G'LI", "TURDIMATOV MEHRIDDIN", "YOQUBJONOV BEHRO'ZBEK HUSANBOY O'G'LI", "NO'MONJONOV ZIYODULLA HUSNIDDIN O'G'LI", "RUSTAMOV ABDULLOH SHUHRATJON O'G'LI", "TAYIROV NURULLA DAVLATALI O'G'LI", "ERKINOV SHAHBOZBEK ANVARJON O'G'LI", "RO'ZIMATOV SIROJIDDIN SANJARBEK O'G'LI", "JIYANOV ABDUKARIM ARABJON O'G'LI", "HOSHIMJONOVA RAVSHANOY ABDUMALIK QIZI", "BAXTIYORJONOVA KOMILAXON AZIZJONOVNA", "ABDULAHADOVA NIGORA IQBOLJON QIZI", "MA'MURJONOVA NOZIMA AHRORJON QIZI", "ABDUBAKIROVA MARJONAXON SARDORBEK QIZI", "ABDURAHMONOVA GULNAVOZXON OTABEK QIZI", "ERKINOVA OYSHAXON SHAVKATJON QIZI", "SALIMJONOVA ZAXROXON SARDORBEK QIZI", "SALIMJONOVA ZUHRAXON SARDORBEK QIZI", "NE'MATOVA SHABNAM DILMUROD QIZI", "MUQIMJONOVA XUSNIYABONU JASURBEK QIZI", "ULUG'BEKOVA SHUKRONABONU ULUG'BEK QIZI", "SHERMATOVA MUAZZAMXON NODIRBEK QIZI"],
+      "6-B": ["MA'RUFOV ABDULLOH SHERALI O'G'LI", "FOZILIJONOV OZODBEK MURODIL O'G'LI", "O'G'URJONOV YAHYOBEK MIRZOHID O'G'LI", "ALIXONOV SHOXRUX ALISHER O'G'LI", "MAVLONOV DILXUSHBEK ZARIFJON O'G'LI", "SOBIRJONOV AHRORJON ANVARJON O'G'LI", "UMARALIYEV HOJIAKBAR JAVLONBEK O'G'LI", "SADIRJONOV MASHHURBEK TURDALI O'G'LI", "TURZUNBOYEV BAHODIRJON SAYDOLIM O'G'LI", "ABDURAHMONOV OZODBEK FAXRIDDIN O'G'LI", "SOBIRJONOV JAVOHIRBEK QOBILJON O'G'LI", "SOBIRJONOV ASADULLA ABDUSALIM O'G'LI", "ABDURAHMONOV OZOZBEK ZIYOBOIDIN O'G'LI", "O'RINBOYEV OMONULLA SHUHRATJON O'G'LI", "PO'LATJONOV MIRIYZO BUNYODJON O'G'LI", "TOJILAYEV SARVARBEK SODIRJON O'G'LI", "RAXMATALIYEV SAYIDKAMOL ABDUSATTOR O'G'LI", "RUSTAMJONOVA SHUKRONAXON BAHODIRJON QIZI", "NISHONBOYEVA OYNUR OYBEK QIZI", "LOCHINBEKOVA MAFTUNAXON LOCHINBEK QIZI", "ISMOILOVA MUNOJATXON SAYDIYOR QIZI", "MAVLONJOVA MARYAMXON SOHIBJON QIZI", "XOSHIMJONOVA MARJONA TULKINJON QIZI", "MAHMUDOVA HILOLAXON JAHONGIR QIZI", "ASQARALIYEVA SHUKRONA NIZOMJON QIZI", "HASANOVA MUBINAXON SHUKURJON QIZI"],
+      "6-A": ["JO'RAYEV RUSLANBEK PAXLAOVON O'G'LI", "OBIDJONOV SHERMUHAMMAD SHERALIYEVICH", "KIMSANOV ABBOSBEK ASADULLA O'G'LI", "MIRZAJONOV OLIMJON ERKINJON O'G'LI", "BAXTIYOROV MUHAMMADQODIR DILSHODJON O'G'LI", "RAVSHANOV HUSNIDDIN AHADJON O'G'LI", "TOLIBOV DILYORBEK DONIYOR O'G'LI", "TOYIROV SHAHRIYOR SHUHRATJON O'G'LI", "KENJABOYEV JO'RABEK IQBOLJON O'G'LI", "NOSIRJONOV AZIZBEK RUSTAMJONOVICH", "MA'RUFJONOV MUHAMMADZIYO UMIDJON O'G'LI", "HOSHIMJONOV FAYZULLOH ABDUVOXID O'G'LI", "ABDULHAMIDOV ABDULLOH DILMUROD O'G'LI", "HABIBIDDINOV ASADBEK DILMURODJON O'G'LI", "ABDURAHMONOV ABDUSHUKUR SHERZODBEK O'G'LI", "OLIMUVA MUSLIMAXON OTABEK QIZI", "ANVARALIYEVA DURDONAXON IBROHIMJON QIZI", "MURTOZOOLILOVA SOLIHAXON ADXAMJON QIZI", "BAXTIYORJONOVA SHUKRONAXON ELYOR QIZI", "SOYIBJONOVA SALIMAXON BAHROMJON QIZI", "SOYIBJONOVA MUHAYYOXON MUHAMMADKARIM QIZI", "ROXMATULLAYEVA ZUXRAXON FURQATJON QIZI", "RAXMATJONOVA DILNOZA FURQATJON QIZI", "IRGASHALIYEVA PARIZODA TAIR QIZI", "ABDUBASIROVA FOTIMAXON ABDURASHID QIZI", "ABDUBASIROVA ZUHRAXON ABDURASHID QIZI"],
+      "5-B": ["ABDUSALOMOV ABDULLOH SHERALI O'G'LI", "SOBIRJONOV AZIZBEK SOHIBJON O'G'LI", "MAXAMADAZIZOV ELBEK AVAZBEK O'G'LI", "MUXTOROV AKBARJON AKMALJON O'G'LI", "VALIJONOV FAYZBEK AHRORJON O'G'LI", "ABDULAXADOV HUSANJON FARXODJON O'G'LI", "ORIFJONOV DILYORBEK OLIMJON O'G'LI", "MAVLONOV FAHRIYOR MUHAMMADALI O'G'LI", "XOLMATOV MUHAMMADQODIR AZIZJON O'G'LI", "MIRZAOLIMOVA MADINAXON MIRZOHID QIZI", "ABDUMALIKOVA MADINAXON ABDULAZIZ QIZI", "ERKINOVA SHUKRONAXON OTABEK QIZI", "SHAVKATOVA HUSNORA QUDRAT QIZI", "BOTIRJONOVA SHOHYORAXON FARRUXOVNA", "NAZIROVA RUHSHONA INOMJON QIZI", "IKROMALIYEVA GULHAYO DAVLATJON QIZI", "YUSUFJONOVA RA'NOXON ZOHIDJON QIZI", "ALIMUHAMMADOVA DILNURA HASANBOY QIZI", "NORMAXAMADOVA DILNAVOZXON DONIYOR QIZI", "XOLMATOVA OMINABONU ZARIBJON QIZI", "MURTOZQULOVA MUBINAXON MUHAMMADMUSO QIZI", "NOSIROVA NURJAHONBEGIM ILHOMJON QIZI", "ABDULAXADOVA FOTIMAXON FARXODJON QIZI", "KARIMJONOVA DILNURAXON SHERZOD QIZI", "KARIMJONOVA NILUFARXON TO'XTASIN QIZI", "RO'ZIBOYEVA RUHSHONAXON DAVRONBEK QIZI", "MASIRJONOVA OBIDAXON ILYOSJON QIZI", "MUXTOROVA ZAHROXON ABRORJON QIZI", "AHMADALIYEVA DILROZBEGIM QOBILJON QIZI", "IBROHIMOVA MARJONAXON O'KTAMJON QIZI", "VAHHOBJONOVA MOHINUR AHADJON QIZI"],
+      "5-A": ["G'AYRATJONOV ALIMUHAMMAD OTABEK O'G'LI", "IBROHIMOV HASANJON ODILJON O'G'LI", "IBROHIMOV HUSANJON ODILJON O'G'LI", "ISMOILOV ASADBEK IN'OMJON O'G'LI", "MAMIRJONOV MUHAMMADRASUL MARDONBEK O'G'LI", "MAXSITJONOV SHAHINBEX QILICHBEK O'G'LI", "NABIJONOV ABDUXOLIQ SOBITJON O'G'LI", "SAYFUDDINOV MUHAMMADRASUL MARDONBEK O'G'LI", "NIZOMOV ASADBEK IN'OMJON O'G'LI", "MIRZAJONOV SARDORBEK TO'XIRJON O'G'LI", "NU'MONJONOV XUSHNUDBEK SAFARALI O'G'LI", "RASULJONOV OG'ABEK HUSANBOY O'G'LI", "MAXAMADMONOV HOJIAKBAR DOVURBEK O'G'LI", "TOYIRJONOV FAYZULLOH SOHIBJON O'G'LI", "HAQNAZAROV MUHAMMADMUSO BAHROMJON O'G'LI", "MA'MURJONOVA SHUKURONA MA'RUFJON QIZI", "OBIDJONOVA GULJAXON SHERZODJON QIZI", "TO'XTASINOVA FARZONA NE'MATJON QIZI", "ALIONOVA DILROZ DILMUROD QIZI", "ISAGXONOVA GULYORA BAXTIYORJON QIZI", "DADAXONOVA OYNOZA SAYIDJON QIZI", "KARIMJONOVA NAZIRAXON NODIRJON QIZI", "KARIMOVA NAZIRAXON NURIDDIN QIZI", "NAJMIDDINOVA NIGINA ZAYLOBIDDIN QIZI", "AKBARALIYEVA JAMILAXON AHRORJON QIZI", "YUSUFJONOVA SHUKRONAXON UMIDJON QIZI", "JO'RAYEVA MUNISAXON DILSHOD QIZI", "RAHIMOVA MUSLMAXON ABDUQAAYIMJON QIZI", "USMONALIYEVA DILNAVOZ ZOHID QIZI"],
+      "11-B": ["HOMIDOV OTABEK VAHHOBJON O'G'LI", "KOMILOV DIYORBEK SHAVKATJON O'G'LI", "YOQUBOV DIYORBEK TOLIBJON O'G'LI", "AHMADJONOVA MOHIGUL SOHIBJON QIZI", "KARIMOVA MAFTUNAXON MA'RUFJON QIZI", "TURSUNBOYEVA KIMYOXON SAYIDOLIM QIZI", "TURDALIYEVA MARJONA ABRORJON QIZI", "ZOKIROVA O'G'ILOY HASANBOY QIZI", "SOBIRJONOVA MALIKAXON ZARIBJON QIZI", "MIRZAYEVA FARANGIZBONU ZARIFJON QIZI", "OLIMOVA MADINAXON G'AYRATJON QIZI", "NOMONJONOVA XUSHNOZAXON ILHOMJON QIZI", "QODIROVA NILUFAR SHERALI QIZI", "BOZORBOYEVA HUSNIDAXON AZIZBEK QIZI", "O'RINBOYEVA BARNOXON FARHODJON QIZI", "ABDUJALILOVA DILAFRO'Z XUSNIDDIN QIZI", "TURDALIYEVA RUHSHONABONU MIRZARAHIM QIZI", "MA'RUFOVA MUXLISAXON ELMUROD QIZI", "JAMOLDINOVA RUXSHONAXON QAHRAMONJON QIZI", "TURSUNBOYEVA MARJONAXON NIZOMJON QIZI", "TURSUNBOYEVA MADINABONU INOMJON QIZI"],
+      "11-A": ["MINOJIDDINOV MUHAMMADYUSUF IBROHIMJON O'G'LI", "ANVAROV MUHAMMADZOXID ULUG'BEK O'G'LI", "ABDURAXMONOV ZIYOBIDDIN OTABEK O'G'LI", "QODIROV ABDULHAMID OTABEK O'G'LI", "ISMOILJONOV HAYOTJON AKMALJON O'G'LI", "NOSIRJONOV ELBEK NODIRBEK O'G'LI", "NU'MONJONOV ZUXRIDDIN XUSNIDDIN O'G'LI", "QAHRAMONJONOVA FARANGIZ AZIZBEK QIZI", "ABDUVAHOBOVA MARJONAXON ABDUBAKIR QIZI", "TURSUNXO'JAYEVA XUSNIDAXON DILSHODJON QIZI", "UMARALIYEVA MADINABONU AKBARALI QIZI", "QOBILJONOVA SHABBONA QOBILJON QIZI", "ISROILOVA ZULFIYAXON ILHOMJON QIZI", "MAHAMMADJONOVA SHOXSANAM AKMALJON QIZI", "ALIJONOVA FARANGIZ FAXRIDDIN QIZI", "NABIJONOVA MUSLIMAXON SODIQJON QIZI", "LUTFULLAYEVA SHOXISTAXON BAXODIRJON QIZI", "MUSAYEVA DILSHODAXON DONIYORJON QIZI", "RAVSHANOVA FERUZABONU UMIDJON QIZI", "IBROHIMOVA MUBINAXON XAYRULLO QIZI", "TO'LQINOVA O'G'ILOY FARRUX QIZI"],
+      "10-B": ["BOTIRJONOV SHOXRUZ FARRUXOVICH", "G'ULOMJONOV MIRJALOL QAHRORELI O'G'LI", "MAXMUDOV DILSHODBEK ODILJON O'G'LI", "TOJIALIEV OTABEK SHARIFJON O'G'LI", "KARIMJONOV ABDULBORIY TO'XTASIN O'G'LI", "G'OMIJONOV MUHAMMADIYYOR ARSLONBEK O'G'LI", "NISHONBOEV ASILBEK XUDOYBERDI O'G'LI", "KARIMJONOV SAMANDAR ILHOMJON O'G'LI", "O'RINBOEV YAHYOBEK SHERMATJON O'G'LI", "TOSHBEKOVA SHAHLOXON ILHOMJONOVNA", "RASULJONOVA ZARNIGORXON AZIZXON QIZI", "EMINJONOVA HILOLA ABDULAZIZ QIZI", "SOBIRJONOVA SHOHIDUNA ABDUSALIM QIZI", "USMONALIYEVA KOMILAXON ZOHID QIZI", "SOBIRJONOVA IQBOLOY SOHIBJON QIZI", "NISHONBOYEVA ZIYODAXON OYBEK QIZI", "USMONALIYEVA MUSHTARIYBONU QOBILJON QIZI", "SOTVOLDIYEVA MOXINUR SALOHIDDIN QIZI", "TURG'UNBOYEVA ROBIYAXON SHAVKATJON QIZI", "ANVARJONOVA NODIRAXON OYBEK QIZI", "ABDUSALOMOVA SHAHRIZODA NODIR QIZI", "NOSIROVA JASMINABONU ILHOMJON QIZI", "XAYDAROVA MADINABONU MUZROBJONOVNA", "BO'RONJONOVA MADINABONU LOCHINBEK QIZI", "KOMILOVA MOHLAROYM SHARIBJON QIZI", "ULUG'BEKOVA RUXSHONABONU ULUG'BEK QIZI"],
+      "10-A": ["MAXAMADAMINOV IBROHIMJON ABDUMANNOF O'G'LI", "MASIRJONOV ABUBAKIR ELIYOR O'G'LI", "HABIBIDDINOV OZODBEK DILMURODJON O'G'LI", "XAQNAZAROV YAHYOBEK BAHROMJON O'G'LI", "ABDURAHMONOV ABDULAZIZ ABDURASHIT O'G'LI", "ERKINOV MUHAMMADBOBURJON SHAVKATJON O'G'LI", "ABDURAHMONOV ABDULAZIZBEK OYBEK O'G'LI", "SODIRJONOV DIYORBEK TURDALI O'G'LI", "MAXMUDOV NOZIMJON JAXONGIR O'G'LI", "UBAYDULLAYEVA MUSHTARIYBONU DONIYORJON QIZI", "XAQNAZAROVA MAXFUZAXON PO'LATJON QIZI", "QOSIMJONOVA MAHSUDAXON ULUG'BEK QIZI", "TO'XTASINOVA FARANGIZ NEMATJON QIZI", "BAXTIYORJONOVA DILYORAXON AZIZJON QIZI", "MIRZAJONOVA DILAFRUZXON MUXTORJON QIZI", "RO'ZIMATOVA MUBORAKXON SANJARBEK QIZI", "BAXTIYORJONOVA GULJAXON ELYOR QIZI", "ZOKIRJONOVA ZEBOXON IQBOLJON QIZI", "RO'ZIBEKOVA LAYLOXON RUSTAMBEK QIZI", "ILYOSOVA MALIKAXON NE'MATALI QIZI", "MIRZAJONOVA MAHLIYOXON ERKINJON QIZI", "RO'ZIBOYEVA DURDONAXON SHUHRATJON QIZI", "TOJIQULOVA MADINABONU ZARIBJON QIZI", "XOLMATOVA RUXSORAXON AZIZJON QIZI", "QOSIMJONOVA MUSHTARIYBEGIM O'TKIRBEK QIZI", "NIZOMOVA MAHLIYOXON MIRZAJON QIZI", "SOLIJONOVA DURDONAXON ZARIBJON QIZI"]
+    };
+
+    const DEFAULT_PASS = 'maktab@';
+    function buildDefaultUsers(){
+      return {
+        "owner": { name: "Boshqaruvchi (Ega)", role: "owner", salt: "owner", hash: hashPass("owner", "owner$") },
+        "direktor": { name: "Maktab Direktori", role: "director", salt: "direktor", hash: hashPass("direktor", "boss"), altHash: hashPass("direktor", "boss58") },
+        "admin58": { name: "Maktab Admin", role: "admin", salt: "admin58", hash: hashPass("admin58", "admin123"), altHash: hashPass("admin58", "maktab@") },
+        "xamidovakramjon": { name: "Xamidov Akramjon", role: "teacher", class: "5-A", shift: 2, salt: "xamidovakramjon", hash: hashPass("xamidovakramjon", DEFAULT_PASS) },
+        "toraqulovkomilaxon": { name: "To'raqulova Komilaxon", role: "teacher", class: "5-B", shift: 2, salt: "toraqulovkomilaxon", hash: hashPass("toraqulovkomilaxon", DEFAULT_PASS) },
+        "jorayevahamidaxon": { name: "Jo'rayeva Hamidaxon", role: "teacher", class: "6-A", shift: 2, salt: "jorayevahamidaxon", hash: hashPass("jorayevahamidaxon", DEFAULT_PASS) },
+        "qodirovaodinaxon": { name: "Qodirova Odinaxon", role: "teacher", class: "6-B", shift: 2, salt: "qodirovaodinaxon", hash: hashPass("qodirovaodinaxon", DEFAULT_PASS) },
+        "abdumajidovasevara": { name: "Abdumajidova Sevara", role: "teacher", class: "7-A", shift: 2, salt: "abdumajidovasevara", hash: hashPass("abdumajidovasevara", DEFAULT_PASS) },
+        "mirzakarimovaasima": { name: "Mirzakarimova Asimaxon", role: "teacher", class: "7-B", shift: 2, salt: "mirzakarimovaasima", hash: hashPass("mirzakarimovaasima", DEFAULT_PASS) },
+        "xakimovadildora": { name: "Xakimova Dildora", role: "teacher", class: "8-A", shift: 1, salt: "xakimovadildora", hash: hashPass("xakimovadildora", DEFAULT_PASS) },
+        "mahmudovqudrat": { name: "Mahmudov Qudrat", role: "teacher", class: "8-B", shift: 1, salt: "mahmudovqudrat", hash: hashPass("mahmudovqudrat", DEFAULT_PASS) },
+        "rasulovdilshod": { name: "Rasulov Dilshod", role: "teacher", class: "9-A", shift: 1, salt: "rasulovdilshod", hash: hashPass("rasulovdilshod", DEFAULT_PASS) },
+        "sharobiddinovamunira": { name: "Sharobiddinova Munira", role: "teacher", class: "9-B", shift: 1, salt: "sharobiddinovamunira", hash: hashPass("sharobiddinovamunira", DEFAULT_PASS) },
+        "xalilovrahimjon": { name: "Xalilov Rahimjon", role: "teacher", class: "10-A", shift: 1, salt: "xalilovrahimjon", hash: hashPass("xalilovrahimjon", DEFAULT_PASS) },
+        "rozikovmurodil": { name: "Ro'ziko'v Murodil", role: "teacher", class: "10-B", shift: 1, salt: "rozikovmurodil", hash: hashPass("rozikovmurodil", DEFAULT_PASS) },
+        "odilovasayyora": { name: "Odilova Sayyora", role: "teacher", class: "11-A", shift: 1, salt: "odilovasayyora", hash: hashPass("odilovasayyora", DEFAULT_PASS) },
+        "sattorovamunojat": { name: "Sattorova Munojatxon", role: "teacher", class: "11-B", shift: 1, salt: "sattorovamunojat", hash: hashPass("sattorovamunojat", DEFAULT_PASS) }
+      };
+    }
+
+    function dateToKey(d){ return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
+    function getTodayKey(){ return dateToKey(new Date()); }
+    function getYesterdayKey(){ const d = new Date(); d.setDate(d.getDate() - 1); return dateToKey(d); }
+    function nowHM(){ const d = new Date(); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+    const MONTHS_UZ = ['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
+    function fmtDateUz(key){ const [y,m,d] = String(key).split('-').map(Number); return `${d} ${MONTHS_UZ[m-1] || ''} ${y}`; }
+
+    function lsGet(k){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e){ return null; } }
+    function lsSet(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } }
+
+    function getUsers(){
+      let u = lsGet(K_USERS);
+      if (!u) { u = buildDefaultUsers(); lsSet(K_USERS, u); }
+      return u;
+    }
+    function saveUsers(u){ return lsSet(K_USERS, u); }
+
+    function getStudents(){
+      let s = lsGet(K_STUDENTS);
+      if (!s || typeof s !== 'object') {
+        s = {};
+        for (let cls in DEFAULT_STUDENTS) {
+          s[cls] = DEFAULT_STUDENTS[cls].map((name, i) => ({ id: `s_${cls}_${i}`, name: name, phone: '' }));
+        }
+        lsSet(K_STUDENTS, s);
+      }
+      return s;
+    }
+    function saveStudents(s){ return lsSet(K_STUDENTS, s); }
+    
+    function getAttendanceStore(d){ return lsGet(K_ATT + (d || getTodayKey())) || {}; }
+    function saveAttendance(cls, records, d, editLogs){
+      const key = d || getTodayKey();
+      const all = getAttendanceStore(key);
+      all[cls] = { updatedAt: nowHM(), records, editLogs: editLogs || [] };
+      return lsSet(K_ATT + key, all);
+    }
+
+    // TELEGRAM HISOBOT
+    async function generateTelegramSummary(){
+      const att = getAttendanceStore(viewDate);
+      const users = getUsers();
+      const studentsData = getStudents();
+      let totalStudents = 0, totalYoq = 0, totalSab = 0, totalClasses = 0, submittedClasses = 0;
+      let yoqLines = [], sabLines = [], pendingClasses = [];
+
+      Object.entries(users).filter(([l,u]) => u.role === 'teacher').forEach(([login, item]) => {
+        const cls = item.class || '';
+        const studs = studentsData[cls] || [];
+        const classAtt = att[cls];
+        totalClasses++;
+        totalStudents += studs.length;
+
+        if (classAtt) {
+          submittedClasses++;
+          const recs = classAtt.records || {};
+          let cYoq = [], cSab = [];
+          studs.forEach(st => {
+            const r = recs[st.id];
+            if (r && r.status === 'yoq') { totalYoq++; cYoq.push(st.name); }
+            else if (r && r.status === 'sababli') { totalSab++; cSab.push(`${st.name}${r.reason ? ' (' + r.reason + ')' : ''}`); }
+          });
+          if (cYoq.length) yoqLines.push(`• ${cls}: ${cYoq.join(', ')}`);
+          if (cSab.length) sabLines.push(`• ${cls}: ${cSab.join(', ')}`);
+        } else {
+          pendingClasses.push(cls);
+        }
+      });
+
+      const totalBor = Math.max(0, totalStudents - totalYoq - totalSab);
+      const pct = totalStudents > 0 ? (Math.round((totalBor / totalStudents) * 1000) / 10).toFixed(1) : '0.0';
+
+      let report = `📊 58-MAKTAB KUNLIK DAVOMAT HISOBOTI\n📅 Sana: ${fmtDateUz(viewDate)}\n🏫 Topshirgan sinflar: ${submittedClasses} / ${totalClasses}\n\n👥 Jami o'quvchilar: ${totalStudents} nafar\n✅ Kelganlar: ${totalBor} nafar (${pct}%)\n❌ Sababsiz (Yo'q): ${totalYoq} nafar\n📝 Sababli: ${totalSab} nafar\n`;
+      if (yoqLines.length) report += `\n❌ SABABSIZ DARS QOLDIRGANLAR:\n` + yoqLines.join('\n') + `\n`;
+      if (sabLines.length) report += `\n📝 SABABLI KELMAGANLAR:\n` + sabLines.join('\n') + `\n`;
+      if (pendingClasses.length) report += `\n⏳ Hali topshirmagan sinflar (${pendingClasses.length} ta): ${pendingClasses.join(', ')}\n`;
+
+      $('tg-report-text').value = report;
+      $('tg-report-modal').classList.remove('hidden');
+      try { await navigator.clipboard.writeText(report); } catch (e) { const ta = $('tg-report-text'); ta.select(); document.execCommand('copy'); }
+    }
+    function closeTgReportModal(){ $('tg-report-modal').classList.add('hidden'); }
+    async function copyTgReportAgain(){
+      const txt = $('tg-report-text').value;
+      try { await navigator.clipboard.writeText(txt); } catch (e) { const ta = $('tg-report-text'); ta.select(); document.execCommand('copy'); }
+      await customAlert("Nusxalandi", "Hisobot matni xotiraga nusxalandi!", "success");
+    }
+    function shareTgReport(){
+      const txt = encodeURIComponent($('tg-report-text').value);
+      window.open(`https://t.me/share/url?url=${encodeURIComponent('58-Maktab')}&text=${txt}`, '_blank');
+    }
+
+    // QURILMALAR VA SESSIA
+    function getThisDeviceId(){
+      let id = localStorage.getItem(K_DEVICE_ID);
+      if (!id) { id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7); localStorage.setItem(K_DEVICE_ID, id); }
+      return id;
+    }
+    function detectDeviceName(){
+      const ua = navigator.userAgent;
+      if (/android/i.test(ua)) return "Android Telefon";
+      if (/iphone|ipad|ipod/i.test(ua)) return "iPhone / iPad";
+      if (/windows/i.test(ua)) return "Windows Kompyuter";
+      if (/macintosh/i.test(ua)) return "Mac Kompyuter";
+      return "Qurilma";
+    }
+    function registerDevice(login){
+      const myId = getThisDeviceId();
+      const k = K_DEVICES + login;
+      let list = lsGet(k) || [];
+      const now = Date.now();
+      const idx = list.findIndex(d => d.id === myId);
+      if (idx >= 0) { list[idx].lastSeen = now; list[idx].name = detectDeviceName(); }
+      else { list.push({ id: myId, name: detectDeviceName(), connectedAt: now, lastSeen: now }); }
+      lsSet(k, list);
+    }
+    function checkDeviceRevoked(login){
+      const list = lsGet(K_DEVICES + login) || [];
+      return !list.some(d => d.id === getThisDeviceId());
+    }
+
+    let currentUser = null, currentShiftFilter = 'all', activeReasonStudent = null, currentTeacherRecords = {}, isTeacherLocked = false, viewDate = getTodayKey(), manageCls = '';
+
+    function handleLogin(e){
+      if (e) e.preventDefault();
+      const u = $('login-user').value.trim().toLowerCase();
+      const p = $('login-pass').value;
+      const rec = getUsers()[u] || null;
+      const inputHash = rec ? hashPass(rec.salt || u, p) : '';
+      if (rec && (inputHash === rec.hash || (rec.altHash && inputHash === rec.altHash))) {
+        completeLogin(u, rec);
+        lsSet(K_SESSION, { username: u, token: rec.hash });
+      } else {
+        $('login-err').classList.remove('hidden');
+      }
+    }
+    function completeLogin(u, rec){
+      currentUser = { username: u, ...rec };
+      delete currentUser.hash; delete currentUser.altHash; delete currentUser.salt;
+      registerDevice(u);
+      $('login-err').classList.add('hidden');
+      $('login-screen').classList.add('hidden');
+      $('app-screen').classList.remove('hidden');
+      viewDate = getTodayKey();
+      initDashboard();
+      checkAnnouncement();
+    }
+    function autoLoginCheck(){
+      const s = lsGet(K_SESSION);
+      if (!s || !s.username) return;
+      const rec = getUsers()[s.username];
+      if (rec && rec.hash === s.token) {
+        if (checkDeviceRevoked(s.username)) { lsSet(K_SESSION, null); return; }
+        completeLogin(s.username, rec);
+      }
+    }
+    function handleLogout(){
+      if (currentUser) {
+        const k = K_DEVICES + currentUser.username;
+        lsSet(k, (lsGet(k) || []).filter(d => d.id !== getThisDeviceId()));
+      }
+      lsSet(K_SESSION, null); currentUser = null;
+      ['director-task-banner','announcement-banner','teacher-submit-wrap','app-screen'].forEach(id => $(id).classList.add('hidden'));
+      $('login-screen').classList.remove('hidden');
+      $('login-form').reset();
+    }
+
+    function renderBottomNav(){
+      const nav = $('bottom-nav-items');
+      nav.innerHTML = '';
+      const items = currentUser.role === 'teacher'
+        ? [{ icon: 'fa-clipboard-check', label: 'Davomat', act: 'window.scrollTo({top:0,behavior:"smooth"})' }, { icon: 'fa-users-gear', label: "O'quvchilar", act: 'openManageStudentsModal(null)' }, { icon: 'fa-comments', label: 'Chat', act: 'openChatModal()' }, { icon: 'fa-mobile-screen', label: 'Qurilmalar', act: 'openDevicesModal()' }]
+        : [{ icon: 'fa-chart-pie', label: 'Asosiy', act: 'window.scrollTo({top:0,behavior:"smooth"})' }, { icon: 'fa-bullhorn', label: "E'lon", act: 'openAnnouncementModal()' }, { icon: 'fa-comments', label: 'Chat', act: 'openChatModal()' }, { icon: 'fa-mobile-screen', label: 'Qurilmalar', act: 'openDevicesModal()' }];
+      items.forEach(it => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('onclick', it.act);
+        btn.className = "flex flex-col items-center justify-center gap-1 py-1 px-3 rounded-xl text-slate-600 active:text-blue-600 active:bg-blue-50 transition";
+        btn.innerHTML = `<i class="fa-solid ${it.icon} text-base"></i><span class="text-[10px] font-black">${it.label}</span>`;
+        nav.appendChild(btn);
+      });
+    }
+
+    function initDashboard(){
+      const roleMap = { owner: 'Ega', director: 'Direktor', admin: 'Admin', teacher: `${currentUser.class || ''} sinfi` };
+      $('user-badge').textContent = `${currentUser.name || ''} (${roleMap[currentUser.role] || ''})`;
+      ['owner-view','admin-view','teacher-view','director-view','director-task-banner','teacher-submit-wrap'].forEach(id => $(id).classList.add('hidden'));
+      renderBottomNav();
+      syncDateControls();
+      if (currentUser.role === 'owner') { $('owner-view').classList.remove('hidden'); switchOwnerTab('management'); }
+      else if (currentUser.role === 'director') { $('director-view').classList.remove('hidden'); renderDirectorDashboard(); }
+      else if (currentUser.role === 'admin') { $('admin-view').classList.remove('hidden'); renderAdminDashboard(); }
+      else if (currentUser.role === 'teacher') { $('teacher-view').classList.remove('hidden'); renderTeacherDashboard(); }
+    }
+
+    // SANA BOSHQARUVI
+    function syncDateControls(){
+      const today = getTodayKey(), yesterday = getYesterdayKey();
+      const label = fmtDateUz(viewDate) + (viewDate === today ? ' (Bugun)' : (viewDate === yesterday ? ' (Kecha)' : ''));
+      ['admin-date','owner-date','director-date'].forEach(id => { if ($(id)) { $(id).value = viewDate; $(id).max = today; } });
+      ['admin-date-label','owner-date-label','dir-date-label'].forEach(id => { if ($(id)) $(id).textContent = label; });
+      const onCls = "flex-1 h-9 rounded-xl text-xs font-black bg-blue-600 text-white shadow-sm transition";
+      const offCls = "flex-1 h-9 rounded-xl text-xs font-black bg-slate-100 active:bg-slate-200 text-slate-600 transition";
+      ['admin','owner','dir'].forEach(p => {
+        if ($(p + '-btn-today')) $(p + '-btn-today').className = (viewDate === today) ? onCls : offCls;
+        if ($(p + '-btn-yesterday')) $(p + '-btn-yesterday').className = (viewDate === yesterday) ? onCls : offCls;
+      });
+    }
+    function setQuickDate(type){ setViewDate(type === 'yesterday' ? getYesterdayKey() : getTodayKey()); }
+    function shiftViewDate(days){
+      const [y,m,d] = viewDate.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      dt.setDate(dt.getDate() + days);
+      const nk = dateToKey(dt);
+      if (nk <= getTodayKey()) setViewDate(nk);
+    }
+    function setViewDate(v){ if (!v) return; viewDate = v > getTodayKey() ? getTodayKey() : v; syncDateControls(); refreshDashboardViews(); }
+
+    // DIREKTOR PANELI
+    function switchDirSubTab(tab){
+      ['classes','ranking','redlist'].forEach(t => {
+        $('dir-sub-' + t).className = (t === tab) ? "py-2 rounded-xl text-xs font-black bg-white text-slate-800 shadow-sm" : "py-2 rounded-xl text-xs font-black text-slate-600";
+        $('dir-sec-' + t).classList.toggle('hidden', t !== tab);
+      });
+    }
+    function renderDirectorDashboard(){
+      syncDateControls();
+      const users = getUsers(), studentsData = getStudents(), att = getAttendanceStore(viewDate);
+      let totalStudents = 0, totalBor = 0, totalYoq = 0, totalClasses = 0, submittedClasses = 0, classStats = [];
+
+      Object.entries(users).filter(([l,u]) => u.role === 'teacher').forEach(([login, item]) => {
+        const cls = item.class || '', studs = studentsData[cls] || [], classAtt = att[cls];
+        totalClasses++; totalStudents += studs.length;
+        let y = 0, s = 0, isSub = !!classAtt;
+        let isEdited = isSub && Array.isArray(classAtt.editLogs) && classAtt.editLogs.length > 0;
+        if (isSub) {
+          submittedClasses++;
+          const recs = classAtt.records || {};
+          studs.forEach(st => { const r = recs[st.id]; if (r && r.status === 'yoq') y++; else if (r && r.status === 'sababli') s++; });
+          totalYoq += y;
+        }
+        const b = isSub ? Math.max(0, studs.length - y - s) : 0;
+        if (isSub) totalBor += b;
+        const pct = studs.length > 0 && isSub ? Math.round((b / studs.length) * 100) : (isSub ? 100 : -1);
+        classStats.push({ cls, teacher: item.name, submitted: isSub, isEdited, time: isSub ? classAtt.updatedAt : '-', total: studs.length, yoq: y, sab: s, pct });
+      });
+
+      $('dir-overall-pct').textContent = `${totalStudents > 0 ? Math.round((totalBor / totalStudents) * 100) : 0}%`;
+      $('dir-overall-sub').textContent = `${totalBor}/${totalStudents}`;
+      $('dir-submitted-count').textContent = `${submittedClasses}/${totalClasses}`;
+      $('dir-absent-count').textContent = totalYoq;
+
+      const dirCards = $('dir-sec-classes'); dirCards.innerHTML = '';
+      classStats.forEach(c => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-2";
+        card.innerHTML = `<div class="min-w-0"><div class="flex items-center gap-2"><span class="text-sm font-black text-slate-800">${esc(c.cls)}</span>${c.submitted ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold"><i class="fa-solid fa-check mr-0.5"></i>${esc(c.time)}</span>` : `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-bold">Kutilmoqda</span>`}${c.isEdited ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-black">Tahrirlangan</span>` : ''}</div><p class="text-xs text-slate-500 font-medium truncate mt-0.5">${esc(c.teacher)}</p><div class="flex items-center gap-3 mt-1.5 text-[11px] font-bold"><span class="text-slate-500">Jami: ${c.total}</span><span class="text-rose-600">Yo'q: ${c.submitted ? c.yoq : '-'}</span><span class="text-amber-600">Sababli: ${c.submitted ? c.sab : '-'}</span></div></div><button type="button" onclick="openClassModal('${esc(c.cls)}')" class="px-3.5 py-2.5 bg-blue-50 active:bg-blue-100 text-blue-600 rounded-xl text-xs font-black border border-blue-200 shrink-0">Ko'rish</button>`;
+        dirCards.appendChild(card);
+      });
+
+      const rankList = $('dir-sec-ranking'); rankList.innerHTML = '';
+      [...classStats].sort((a,b) => b.pct - a.pct).forEach((c, idx) => {
+        const barColor = c.pct >= 90 ? 'bg-emerald-500' : (c.pct >= 75 ? 'bg-amber-500' : (c.pct >= 0 ? 'bg-rose-500' : 'bg-slate-300'));
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-between gap-3 text-xs";
+        div.innerHTML = `<div class="flex items-center gap-2.5 min-w-0"><span class="w-7 h-7 rounded-xl bg-slate-100 font-black text-slate-700 flex items-center justify-center shrink-0">${idx + 1}</span><div class="truncate"><p class="font-black text-slate-800">${esc(c.cls)} <span class="font-normal text-slate-500">(${esc(c.teacher)})</span></p><div class="w-36 h-1.5 bg-slate-200 rounded-full mt-1.5 overflow-hidden"><div class="h-full ${barColor}" style="width: ${c.pct >= 0 ? c.pct : 0}%"></div></div></div></div><span class="font-black text-sm shrink-0 ${c.pct >= 90 ? 'text-emerald-600' : (c.pct >= 0 ? 'text-slate-800' : 'text-slate-400')}">${c.pct >= 0 ? c.pct + '%' : '—'}</span>`;
+        rankList.appendChild(div);
+      });
+
+      const redBox = $('dir-redlist-box'); redBox.innerHTML = '';
+      let absentMap = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith(K_ATT)) {
+          Object.entries(lsGet(k) || {}).forEach(([cls, cObj]) => {
+            Object.entries(cObj.records || {}).forEach(([stId, r]) => {
+              if (r && r.status === 'yoq') { if (!absentMap[stId]) absentMap[stId] = { cls, count: 0 }; absentMap[stId].count++; }
+            });
+          });
+        }
+      }
+      let redList = [];
+      Object.entries(absentMap).forEach(([stId, info]) => { const stObj = (studentsData[info.cls] || []).find(x => x.id === stId); if (stObj) redList.push({ name: stObj.name, cls: info.cls, count: info.count }); });
+      redList.sort((a,b) => b.count - a.count);
+      if (!redList.length) redBox.innerHTML = '<p class="py-4 text-center text-xs text-slate-400">Sababsiz dars qoldirganlar aniqlanmadi</p>';
+      else redList.slice(0, 15).forEach(r => {
+        const row = document.createElement('div');
+        row.className = "py-2.5 flex items-center justify-between gap-2 text-xs";
+        row.innerHTML = `<div class="min-w-0"><p class="font-bold text-slate-800 truncate">${esc(r.name)}</p><p class="text-[10px] font-black text-slate-400">${esc(r.cls)} sinfi</p></div><span class="px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 font-black shrink-0">${r.count} marta</span>`;
+        redBox.appendChild(row);
+      });
+    }
+
+    function openDirectorTaskModal(){
+      const sel = $('dir-task-class'); sel.innerHTML = '';
+      Object.values(getUsers()).filter(u => u.role === 'teacher').forEach(t => {
+        const opt = document.createElement('option'); opt.value = t.class; opt.textContent = `${t.class} (${t.name})`; sel.appendChild(opt);
+      });
+      $('dir-task-input').value = '';
+      $('director-task-modal').classList.remove('hidden');
+    }
+    function closeDirectorTaskModal(){ $('director-task-modal').classList.add('hidden'); }
+    async function sendDirectorTask(){
+      const cls = $('dir-task-class').value, text = $('dir-task-input').value.trim();
+      if (!cls || !text) { await customAlert("Xatolik", "Topshiriq matnini kiriting!", "error"); return; }
+      const tasks = lsGet(K_DIR_TASKS) || {};
+      tasks[cls] = { text, time: nowHM() + ', ' + fmtDateUz(getTodayKey()) };
+      lsSet(K_DIR_TASKS, tasks);
+      closeDirectorTaskModal();
+      await customAlert("Yuborildi", `${cls} sinf rahbariga topshiriq yuborildi!`, "success");
+    }
+
+    // SINF RAHBARI EKRANI
+    function renderTeacherDashboard(){
+      if (!currentUser || currentUser.role !== 'teacher') { $('director-task-banner').classList.add('hidden'); $('teacher-submit-wrap').classList.add('hidden'); return; }
+      const c = currentUser.class || '';
+      $('current-date-badge').textContent = fmtDateUz(getTodayKey());
+      $('teacher-class-title').textContent = `${c} sinfi`;
+      $('teacher-shift-info').textContent = `${currentUser.shift == 1 ? 1 : 2}-Smena`;
+
+      const tasks = lsGet(K_DIR_TASKS) || {};
+      if (c && tasks[c] && tasks[c].text) {
+        $('director-task-text').textContent = tasks[c].text;
+        $('director-task-time').textContent = `(${tasks[c].time})`;
+        $('director-task-banner').classList.remove('hidden');
+      } else $('director-task-banner').classList.add('hidden');
+
+      const stored = getAttendanceStore(getTodayKey())[c];
+      if (stored && stored.records) { currentTeacherRecords = JSON.parse(JSON.stringify(stored.records)); isTeacherLocked = true; }
+      else { currentTeacherRecords = {}; isTeacherLocked = false; }
+      updateTeacherLockUI(stored);
+      renderStudentsList();
+    }
+    function updateTeacherLockUI(stored){
+      if (isTeacherLocked) {
+        $('teacher-locked-banner').classList.remove('hidden');
+        const editNote = (stored && stored.editLogs && stored.editLogs.length) ? ` (Oxirgi tahrir: ${stored.updatedAt})` : ` (Yuborilgan: ${stored ? stored.updatedAt : ''})`;
+        $('teacher-locked-sub').textContent = `Davomat qabul qilingan${editNote}.`;
+        $('teacher-submit-wrap').classList.add('hidden');
+      } else {
+        $('teacher-locked-banner').classList.add('hidden');
+        $('teacher-submit-wrap').classList.remove('hidden');
+        const btn = $('btn-submit-att');
+        if (stored && stored.records) {
+          btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> O\'zgarishlarni saqlash';
+          btn.className = "w-full bg-amber-600 active:bg-amber-700 text-white font-black py-3.5 rounded-2xl shadow-xl transition active:scale-[0.98] flex items-center justify-center gap-2 text-sm sm:text-base";
+        } else {
+          btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Adminga yuborish';
+          btn.className = "w-full bg-emerald-600 active:bg-emerald-700 text-white font-black py-3.5 rounded-2xl shadow-xl transition active:scale-[0.98] flex items-center justify-center gap-2 text-sm sm:text-base";
+        }
+      }
+    }
+    function enableTeacherEditMode(){ isTeacherLocked = false; updateTeacherLockUI(getAttendanceStore(getTodayKey())[currentUser.class]); renderStudentsList(); }
+    async function dismissDirectorTask(){
+      const tasks = lsGet(K_DIR_TASKS) || {}; delete tasks[currentUser.class]; lsSet(K_DIR_TASKS, tasks);
+      $('director-task-banner').classList.add('hidden');
+      await customAlert("Bajarildi", "Direktor ko'rsatmasi bajarildi!", "success");
+    }
+    async function callParentPhone(phone){
+      const clean = (phone || '').replace(/[^0-9+]/g, '');
+      if (!clean) { await customAlert("Raqam kiritilmagan", "Ota-ona raqami kiritilmagan. Pastki menyudan \"O'quvchilar\" orqali qo'shing.", "warn"); return; }
+      window.location.href = `tel:${clean}`;
+    }
+
+    function renderStudentsList(){
+      const container = $('students-list'), allStudents = getStudents()[currentUser.class] || [];
+      const q = ($('teacher-search') ? $('teacher-search').value : '').trim().toUpperCase();
+      container.innerHTML = '';
+      if (!allStudents.length) { container.innerHTML = '<div class="bg-white p-6 rounded-2xl text-center text-xs text-slate-400 border border-slate-200">O\'quvchilar yo\'q.</div>'; updateTeacherCounter(); return; }
+
+      const base = "py-2.5 px-3 text-xs font-black rounded-xl border transition text-center ";
+      const idle = "bg-slate-100 text-slate-600 border-slate-200 active:bg-slate-200";
+      const disAttr = isTeacherLocked ? 'disabled' : '', lockStyle = isTeacherLocked ? 'opacity-70 cursor-not-allowed' : '';
+
+      allStudents.forEach((s, idx) => {
+        if (q && !s.name.includes(q)) return;
+        const rec = currentTeacherRecords[s.id], status = rec ? rec.status : '', reason = rec && rec.reason ? rec.reason : '';
+        const hasPhone = s.phone && s.phone.trim().length > 4;
+        const contactBtn = status === 'yoq' ? `<button type="button" onclick="callParentPhone('${esc(s.phone || '')}')" class="mt-2.5 w-full py-2.5 bg-emerald-50 active:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-black flex items-center justify-center gap-1.5"><i class="fa-solid fa-phone"></i> Ota-onaga qo'ng'iroq</button>` : '';
+        const card = document.createElement('div');
+        card.className = `bg-white p-3.5 rounded-2xl border ${status === 'yoq' ? 'border-rose-300 bg-rose-50/20' : (status === 'sababli' ? 'border-amber-300 bg-amber-50/20' : 'border-slate-200')} shadow-sm`;
+        card.innerHTML = `<div class="flex items-start gap-2.5 mb-2.5"><span class="text-xs font-black w-6 h-6 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">${idx + 1}</span><div class="min-w-0 flex-1"><p class="text-xs sm:text-sm font-bold text-slate-800 leading-snug">${esc(s.name)}</p>${hasPhone ? `<p class="text-[10px] text-slate-400 font-semibold mt-0.5">${esc(s.phone)}</p>` : ''}${(status === 'sababli' && reason) ? `<p class="text-[11px] font-bold text-amber-600 mt-1"><i class="fa-solid fa-note-sticky mr-1"></i>Sababi: ${esc(reason)}</p>` : ''}</div></div><div class="flex items-center gap-2"><button type="button" ${disAttr} onclick="setStatus('${esc(s.id)}', 'yoq')" class="flex-1 ${base}${lockStyle} ${status === 'yoq' ? 'btn-active-yoq shadow-sm' : idle}">Yo'q</button><button type="button" ${disAttr} onclick="setStatus('${esc(s.id)}', 'sababli')" class="flex-1 ${base}${lockStyle} ${status === 'sababli' ? 'btn-active-sababli shadow-sm' : idle}">Sababli</button>${(status && !isTeacherLocked) ? `<button type="button" onclick="clearStudentStatus('${esc(s.id)}')" class="w-10 h-10 rounded-xl border border-slate-200 bg-white text-slate-400 active:bg-slate-100 flex items-center justify-center shrink-0"><i class="fa-solid fa-rotate-left"></i></button>` : ''}</div>${contactBtn}`;
+        container.appendChild(card);
+      });
+      updateTeacherCounter();
+    }
+    function clearStudentStatus(id){ if (!isTeacherLocked) { delete currentTeacherRecords[id]; renderStudentsList(); } }
+    function setStatus(id, st){
+      if (isTeacherLocked) return;
+      const s = (getStudents()[currentUser.class] || []).find(x => x.id === id);
+      if (!s) return;
+      if (st === 'sababli') {
+        activeReasonStudent = id;
+        $('reason-student-name').textContent = s.name;
+        const cur = currentTeacherRecords[id];
+        $('reason-input').value = (cur && cur.status === 'sababli' && cur.reason) ? cur.reason : '';
+        $('reason-modal').classList.remove('hidden');
+        setTimeout(() => $('reason-input').focus(), 50);
+      } else {
+        if (currentTeacherRecords[id] && currentTeacherRecords[id].status === 'yoq') delete currentTeacherRecords[id];
+        else currentTeacherRecords[id] = { status: st, reason: '' };
+        renderStudentsList();
+      }
+    }
+    function saveReason(){
+      const val = $('reason-input').value.trim() || "Sababi ko'rsatilmadi";
+      if (activeReasonStudent) currentTeacherRecords[activeReasonStudent] = { status: 'sababli', reason: val };
+      closeReasonModal(); renderStudentsList();
+    }
+    function closeReasonModal(){ activeReasonStudent = null; $('reason-modal').classList.add('hidden'); }
+    function updateTeacherCounter(){
+      const students = getStudents()[currentUser.class] || [];
+      let y = 0, s = 0;
+      students.forEach(st => { const r = currentTeacherRecords[st.id]; if (r && r.status === 'yoq') y++; else if (r && r.status === 'sababli') s++; });
+      $('stats-counter').innerHTML = `<span>Jami: <b>${students.length}</b></span><span class="text-rose-600">Yo'q: <b>${y}</b></span><span class="text-amber-600">Sababli: <b>${s}</b></span>`;
+    }
+
+    const STATUS_NAMES = { yoq: "Yo'q", sababli: 'Sababli', '': "Kelgan (Bor)" };
+    async function submitAttendance(){
+      const c = currentUser.class, students = getStudents()[c] || [];
+      if (!students.length) { await customAlert("Xatolik", "Sinf ro'yxati bo'sh!", "error"); return; }
+      const today = getTodayKey(), prev = getAttendanceStore(today)[c];
+      let editLogs = (prev && Array.isArray(prev.editLogs)) ? [...prev.editLogs] : [];
+      if (prev && prev.records) {
+        const timeNow = nowHM();
+        students.forEach(st => {
+          const oldR = prev.records[st.id], newR = currentTeacherRecords[st.id];
+          const oldSt = oldR ? oldR.status : '', newSt = newR ? newR.status : '';
+          const oldRe = oldR ? (oldR.reason || '') : '', newRe = newR ? (newR.reason || '') : '';
+          if (oldSt !== newSt || (newSt === 'sababli' && oldRe !== newRe)) {
+            editLogs.push(`${timeNow} — ${st.name}: ${STATUS_NAMES[oldSt] || "Kelgan"} → ${(STATUS_NAMES[newSt] || "Kelgan") + (newSt === 'sababli' && newRe ? ` (${newRe})` : '')}`);
+          }
+        });
+      }
+      saveAttendance(c, JSON.parse(JSON.stringify(currentTeacherRecords)), today, editLogs);
+      isTeacherLocked = true;
+      updateTeacherLockUI(getAttendanceStore(today)[c]);
+      renderStudentsList();
+      await customAlert(prev && prev.records ? "Tahrirlandi" : "Topshirildi", prev && prev.records ? "O'zgarishlar saqlandi!" : "Siz davomatni topshirdingiz!", "success");
+    }
+
+    // O'QUVCHILAR MODALI
+    function openManageStudentsModal(targetCls){
+      manageCls = typeof targetCls === 'string' ? targetCls : (currentUser ? currentUser.class : '');
+      if (!manageCls) return;
+      $('manage-title').textContent = `${manageCls} sinfi o'quvchilari`;
+      $('new-student-name').value = ''; $('new-student-phone').value = '';
+      renderManageStudentsList();
+      $('manage-students-modal').classList.remove('hidden');
+    }
+    function closeManageStudentsModal(){
+      $('manage-students-modal').classList.add('hidden');
+      if (currentUser && currentUser.role === 'teacher') renderTeacherDashboard(); else refreshDashboardViews();
+    }
+    function renderManageStudentsList(){
+      const list = getStudents()[manageCls] || [], ul = $('modal-manage-students-list');
+      ul.innerHTML = '';
+      if (!list.length) { ul.innerHTML = '<li class="p-4 text-center text-xs text-slate-400">O\'quvchilar yo\'q.</li>'; return; }
+      list.forEach((s, idx) => {
+        const li = document.createElement('li');
+        li.className = "p-3 flex justify-between items-center gap-2 text-xs";
+        li.innerHTML = `<div class="min-w-0"><span class="font-bold text-slate-800 block truncate">${idx + 1}. ${esc(s.name)}</span>${s.phone ? `<span class="text-[11px] text-emerald-600 font-bold"><i class="fa-solid fa-phone mr-1"></i>${esc(s.phone)}</span>` : '<span class="text-[10px] text-slate-400">Raqam yo\'q</span>'}</div><div class="flex items-center gap-1.5 shrink-0"><button type="button" onclick="editStudentItem('${esc(s.id)}')" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-pen"></i></button><button type="button" onclick="removeSingleStudent('${esc(s.id)}')" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button></div>`;
+        ul.appendChild(li);
+      });
+    }
+    async function addSingleStudent(){
+      const val = $('new-student-name').value.trim().toUpperCase(), phoneVal = $('new-student-phone').value.trim();
+      if (!val) return;
+      const st = getStudents(); if (!st[manageCls]) st[manageCls] = [];
+      st[manageCls].push({ id: 's_' + Date.now().toString(36) + Math.random().toString(36).slice(2,5), name: val, phone: phoneVal });
+      saveStudents(st); $('new-student-name').value = ''; $('new-student-phone').value = '';
+      renderManageStudentsList();
+      await customAlert("Qo'shildi", "O'quvchi qo'shildi!", "success");
+    }
+    async function removeSingleStudent(id){
+      if (!await customConfirm("O'chirish", "O'quvchini o'chirmoqchimisiz?", "bg-rose-600")) return;
+      const st = getStudents(); if (st[manageCls]) { st[manageCls] = st[manageCls].filter(x => x.id !== id); saveStudents(st); }
+      renderManageStudentsList();
+    }
+    async function editStudentItem(id){
+      const st = getStudents(), s = (st[manageCls] || []).find(x => x.id === id);
+      if (!s) return;
+      const res = await customEditStudentPrompt(s.name, s.phone || '');
+      if (res && res.name && res.name.trim()) { s.name = res.name.trim().toUpperCase(); s.phone = (res.phone || '').trim(); saveStudents(st); renderManageStudentsList(); }
+    }
+    function handleStudentFileUpload(e){
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(evt){
+        const lines = (evt.target.result || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        if (!lines.length) { await customAlert("Xato", "Fayl bo'sh!", 'error'); return; }
+        const st = getStudents(); if (!st[manageCls]) st[manageCls] = [];
+        let added = 0;
+        lines.forEach(line => {
+          const parts = line.split(/[;,]/);
+          const cleanName = parts[0].replace(/^[0-9]+[.)\-\s]+/, '').trim().toUpperCase();
+          if (cleanName) { st[manageCls].push({ id: 's_' + Date.now().toString(36) + Math.random().toString(36).slice(2,5), name: cleanName, phone: parts[1] ? parts[1].trim() : '' }); added++; }
+        });
+        saveStudents(st); renderManageStudentsList();
+        await customAlert("Yuklandi", `${added} nafar o'quvchi yuklandi!`, 'success');
+      };
+      reader.readAsText(file); e.target.value = '';
+    }
+
+    // SINF RAHBARI VA ADMIN BOSHQARUVI
+    function openAddTeacherModal(){
+      $('teacher-modal-title').textContent = "Yangi Sinf Rahbari"; $('teacher-modal-old-login').value = ''; $('teacher-modal-class').value = ''; $('teacher-modal-name').value = ''; $('teacher-modal-shift').value = '1'; $('teacher-modal-login').value = ''; $('teacher-modal-login').disabled = false; $('teacher-modal-pass').value = DEFAULT_PASS;
+      $('teacher-modal').classList.remove('hidden');
+    }
+    function editTeacherUser(login){
+      const u = getUsers()[login]; if (!u || u.role !== 'teacher') return;
+      $('teacher-modal-title').textContent = "Sinf Rahbarini tahrirlash"; $('teacher-modal-old-login').value = login; $('teacher-modal-class').value = u.class || ''; $('teacher-modal-name').value = u.name || ''; $('teacher-modal-shift').value = String(u.shift || 1); $('teacher-modal-login').value = login; $('teacher-modal-login').disabled = false; $('teacher-modal-pass').value = '';
+      $('teacher-modal').classList.remove('hidden');
+    }
+    function closeTeacherModal(){ $('teacher-modal').classList.add('hidden'); }
+    async function saveTeacherUser(){
+      const oldLogin = $('teacher-modal-old-login').value.trim(), cls = $('teacher-modal-class').value.trim().toUpperCase(), name = $('teacher-modal-name').value.trim(), shift = parseInt($('teacher-modal-shift').value) || 1, login = $('teacher-modal-login').value.trim().toLowerCase(), pass = $('teacher-modal-pass').value.trim();
+      if (!cls || !name || !login) { await customAlert("Xatolik", "Barcha maydonlarni to'ldiring!", 'error'); return; }
+      const users = getUsers();
+      if (login !== oldLogin && users[login]) { await customAlert("Xatolik", "Ushbu login band!", 'error'); return; }
+      let salt = login, hash = "";
+      if (oldLogin && users[oldLogin]) { salt = users[oldLogin].salt || login; hash = pass ? hashPass(salt, pass) : users[oldLogin].hash; if (login !== oldLogin) delete users[oldLogin]; }
+      else { if (!pass) { await customAlert("Eslatma", "Parolni kiriting!", 'warn'); return; } hash = hashPass(salt, pass); }
+      users[login] = { name, role: 'teacher', class: cls, shift, salt, hash };
+      saveUsers(users);
+      const st = getStudents(); if (!st[cls]) { st[cls] = []; saveStudents(st); }
+      closeTeacherModal(); refreshDashboardViews();
+      await customAlert("Saqlandi", "Sinf rahbari saqlandi!", "success");
+    }
+    async function deleteTeacherUser(login){
+      if (!await customConfirm("O'chirish", `"${login}" sinf rahbarini o'chirmoqchimisiz?`, "bg-rose-600")) return;
+      const users = getUsers(); delete users[login]; saveUsers(users); refreshDashboardViews();
+    }
+
+    function openAdminModal(loginKey){
+      $('admin-edit-key').value = loginKey || '';
+      if (loginKey) {
+        const u = getUsers()[loginKey]; if (!u) return;
+        $('admin-modal-title').textContent = "Tahrirlash"; $('admin-modal-name').value = u.name || ''; $('admin-modal-role').value = u.role || 'admin'; $('admin-modal-login').value = loginKey; $('admin-modal-login').disabled = true; $('admin-modal-pass').value = '';
+      } else {
+        $('admin-modal-title').textContent = "Yangi Rahbar / Admin"; $('admin-modal-name').value = ''; $('admin-modal-role').value = 'admin'; $('admin-modal-login').value = ''; $('admin-modal-login').disabled = false; $('admin-modal-pass').value = '';
+      }
+      $('admin-user-modal').classList.remove('hidden');
+    }
+    function closeAdminModal(){ $('admin-user-modal').classList.add('hidden'); }
+    async function saveAdminUser(){
+      const editKey = $('admin-edit-key').value.trim(), name = $('admin-modal-name').value.trim(), role = $('admin-modal-role').value, login = $('admin-modal-login').value.trim().toLowerCase(), pass = $('admin-modal-pass').value.trim();
+      if (!name || !login) { await customAlert("Xatolik", "Barcha maydonlarni to'ldiring!", 'error'); return; }
+      const users = getUsers();
+      if (!editKey && users[login]) { await customAlert("Xatolik", "Bu login band!", 'error'); return; }
+      let salt = login, hash = "";
+      if (editKey && users[editKey]) { salt = users[editKey].salt || login; hash = pass ? hashPass(salt, pass) : users[editKey].hash; }
+      else { if (!pass) { await customAlert("Xatolik", "Parolni kiriting!", 'error'); return; } hash = hashPass(salt, pass); }
+      users[login] = { name, role, salt, hash }; saveUsers(users); closeAdminModal(); refreshDashboardViews();
+      await customAlert("Saqlandi", "Ma'lumotlar saqlandi!", "success");
+    }
+    async function deleteAdminUser(login){
+      if (!await customConfirm("O'chirish", `"${login}" hisobi o'chirilsinmi?`, "bg-rose-600")) return;
+      const users = getUsers(); delete users[login]; saveUsers(users); refreshDashboardViews();
+    }
+
+    function refreshDashboardViews(){
+      if (!currentUser) return;
+      if (currentUser.role === 'owner') { renderOwnerDashboard(); renderOwnerAttendance(); }
+      else if (currentUser.role === 'director') renderDirectorDashboard();
+      else if (currentUser.role === 'admin') renderAdminDashboard();
+    }
+    function filterShift(sh){
+      currentShiftFilter = sh;
+      ['all', '1', '2'].forEach(id => { if ($('tab-' + id)) $('tab-' + id).className = (id === sh) ? "py-2 rounded-xl text-xs font-black bg-white text-blue-600 shadow-sm" : "py-2 rounded-xl text-xs font-black text-slate-600"; });
+      renderAdminDashboard();
+    }
+    function switchOwnerTab(tab){
+      const isM = tab === 'management';
+      $('owner-tab-manage').className = isM ? "py-2.5 rounded-xl text-xs font-black bg-white text-blue-600 shadow-sm" : "py-2.5 rounded-xl text-xs font-black text-slate-600";
+      $('owner-tab-att').className = !isM ? "py-2.5 rounded-xl text-xs font-black bg-white text-blue-600 shadow-sm" : "py-2.5 rounded-xl text-xs font-black text-slate-600";
+      $('owner-sec-manage').classList.toggle('hidden', !isM);
+      $('owner-sec-att').classList.toggle('hidden', isM);
+      if (isM) renderOwnerDashboard(); else renderOwnerAttendance();
+    }
+    function renderOwnerDashboard(){
+      const users = getUsers(), adminList = $('owner-admins-list'), teacherList = $('owner-teachers-list');
+      adminList.innerHTML = ''; teacherList.innerHTML = '';
+      Object.entries(users).filter(([l,u]) => u.role === 'admin' || u.role === 'director').forEach(([l,item]) => {
+        const row = document.createElement('div'); row.className = "py-3 flex items-center justify-between gap-2 text-xs";
+        row.innerHTML = `<div class="min-w-0"><p class="font-bold text-slate-800 truncate">${esc(item.name)}</p><p class="text-[11px] text-slate-500 font-mono">${esc(l)} · <span class="font-sans font-black ${item.role === 'director' ? 'text-rose-600' : 'text-indigo-600'}">${item.role === 'director' ? 'Direktor' : 'Admin'}</span></p></div><div class="flex gap-1.5 shrink-0"><button type="button" onclick="openAdminModal('${esc(l)}')" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center"><i class="fa-solid fa-pen"></i></button><button type="button" onclick="deleteAdminUser('${esc(l)}')" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button></div>`;
+        adminList.appendChild(row);
+      });
+      Object.entries(users).filter(([l,u]) => u.role === 'teacher').forEach(([l,item]) => {
+        const row = document.createElement('div'); row.className = "py-3 flex items-center justify-between gap-2 text-xs";
+        row.innerHTML = `<div class="min-w-0"><p class="font-black text-slate-800">${esc(item.class)} <span class="font-semibold text-slate-600">${esc(item.name)}</span></p><p class="text-[11px] text-blue-600 font-mono">${esc(l)}</p></div><div class="flex gap-1.5 shrink-0"><button type="button" onclick="openManageStudentsModal('${esc(item.class)}')" class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center"><i class="fa-solid fa-users"></i></button><button type="button" onclick="editTeacherUser('${esc(l)}')" class="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center"><i class="fa-solid fa-pen"></i></button><button type="button" onclick="deleteTeacherUser('${esc(l)}')" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button></div>`;
+        teacherList.appendChild(row);
+      });
+    }
+    function renderOwnerAttendance(){ renderClassCards($('owner-classes-cards'), false, 'all'); }
+    function renderAdminDashboard(){ renderClassCards($('admin-classes-cards'), true, currentShiftFilter); }
+    function renderClassCards(container, withManage, shiftFilter){
+      container.innerHTML = '';
+      const att = getAttendanceStore(viewDate), users = getUsers(), studentsData = getStudents();
+      Object.entries(users).filter(([l,u]) => u.role === 'teacher').forEach(([login,item]) => {
+        if (shiftFilter !== 'all' && String(item.shift) !== shiftFilter) return;
+        const cls = item.class || '', studs = studentsData[cls] || [], classAtt = att[cls], records = (classAtt && classAtt.records) || {};
+        let y = 0, s = 0, submitted = !!classAtt, isEdited = submitted && Array.isArray(classAtt.editLogs) && classAtt.editLogs.length > 0;
+        studs.forEach(st => { const r = records[st.id]; if (r && r.status === 'yoq') y++; if (r && r.status === 'sababli') s++; });
+        const card = document.createElement('div');
+        card.className = "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5";
+        card.innerHTML = `<div class="flex items-start justify-between gap-2"><div class="min-w-0"><div class="flex items-center gap-1.5 flex-wrap"><span class="text-sm font-black text-slate-800">${esc(cls)}</span><span class="text-[10px] px-2 py-0.5 rounded-md ${item.shift == 1 ? 'bg-sky-100 text-sky-800' : 'bg-purple-100 text-purple-800'} font-bold">${item.shift == 1 ? 1 : 2}-sm</span>${submitted ? `<span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold"><i class="fa-solid fa-check mr-0.5"></i>${esc(classAtt.updatedAt || '')}</span>` : `<span class="text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-bold">Kutilmoqda</span>`}${isEdited ? `<span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-black">Tahrirlangan</span>` : ''}</div><p class="text-xs text-slate-500 font-medium truncate mt-0.5">${esc(item.name)}</p></div><button type="button" onclick="openClassModal('${esc(cls)}')" class="px-3.5 py-2 bg-blue-50 active:bg-blue-100 text-blue-600 rounded-xl text-xs font-black border border-blue-200 shrink-0">Ko'rish</button></div><div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs"><div class="flex items-center gap-3 font-bold"><span class="text-slate-500">Jami: ${studs.length}</span><span class="text-rose-600">Yo'q: ${submitted ? y : '-'}</span><span class="text-amber-600">Sababli: ${submitted ? s : '-'}</span></div>${withManage ? `<div class="flex items-center gap-1.5"><button type="button" onclick="openManageStudentsModal('${esc(cls)}')" class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center"><i class="fa-solid fa-users"></i></button><button type="button" onclick="editTeacherUser('${esc(login)}')" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center"><i class="fa-solid fa-pen"></i></button><button type="button" onclick="deleteTeacherUser('${esc(login)}')" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button></div>` : ''}</div>`;
+        container.appendChild(card);
+      });
+    }
+
+    // DAVOMATNI KO'RISH MODALI
+    function openClassModal(classKey){
+      const t = Object.values(getUsers()).find(u => u.role === 'teacher' && u.class === classKey) || null;
+      const students = getStudents()[classKey] || [], classAtt = getAttendanceStore(viewDate)[classKey], records = (classAtt && classAtt.records) || {};
+      const editLogs = (classAtt && Array.isArray(classAtt.editLogs)) ? classAtt.editLogs : [];
+      $('modal-class-title').textContent = `${classKey} sinfi davomati`;
+      $('modal-class-sub').textContent = `${fmtDateUz(viewDate)} | ${t ? t.name : 'Rahbar yo\'q'}`;
+
+      const histBox = $('modal-edit-history'), histList = $('modal-edit-history-list');
+      if (editLogs.length > 0) {
+        histList.innerHTML = editLogs.map(log => `<li class="flex items-start gap-1.5"><i class="fa-solid fa-circle-dot text-[8px] mt-1.5 text-amber-600"></i><span>${esc(log)}</span></li>`).join('');
+        histBox.classList.remove('hidden');
+      } else histBox.classList.add('hidden');
+
+      let yoq = [], sab = [];
+      students.forEach(st => { const r = records[st.id]; if (r && r.status === 'yoq') yoq.push(st.name); else if (r && r.status === 'sababli') sab.push({ name: st.name, reason: r.reason }); });
+      $('modal-stat-total').textContent = students.length; $('modal-stat-yoq').textContent = yoq.length; $('modal-stat-sababli').textContent = sab.length;
+
+      const renderGroup = (title, color, list, isSababli = false) => {
+        if (!list.length) return '';
+        let lis = list.map((x, i) => `<li class="py-2.5 px-3 flex justify-between items-center gap-2 text-xs border-b border-slate-50 last:border-0"><span class="font-bold text-slate-700">${i+1}. ${isSababli ? esc(x.name) : esc(x)}</span>${isSababli && x.reason ? `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200 shrink-0">${esc(x.reason)}</span>` : ''}</li>`).join('');
+        return `<div class="rounded-2xl border border-${color}-200 overflow-hidden shadow-sm"><div class="bg-${color}-100 px-3.5 py-2 text-xs font-black text-${color}-800 border-b border-${color}-200 uppercase flex justify-between"><span>${title}</span><span>${list.length} nafar</span></div><ul class="divide-y divide-slate-100 bg-white">${lis}</ul></div>`;
+      };
+      let html = renderGroup("Yo'q (Sababsiz)", 'rose', yoq) + renderGroup('Sababli', 'amber', sab, true);
+      if (!html) html = classAtt ? '<div class="p-6 text-center rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-black"><i class="fa-solid fa-circle-check text-xl block mb-1.5 text-emerald-600"></i> Barcha o\'quvchilar darsda!</div>' : '<p class="text-xs text-center text-slate-400 p-6 font-bold">Davomat hali topshirilmagan.</p>';
+      $('modal-students-list').innerHTML = html;
+      $('class-detail-modal').classList.remove('hidden');
+    }
+    function closeClassModal(){ $('class-detail-modal').classList.add('hidden'); }
+
+    // E'LON, CHAT, QURILMALAR
+    function checkAnnouncement(){
+      const ann = lsGet(K_ANNOUNCE), banner = $('announcement-banner');
+      if (ann && ann.text) {
+        $('announcement-text').textContent = ann.text;
+        $('announcement-meta').textContent = `(${ann.author || 'Ma\'muriyat'} · ${ann.time || ''})`;
+        banner.classList.remove('hidden');
+        $('announcement-actions').classList.toggle('hidden', !(currentUser && (currentUser.role === 'owner' || currentUser.role === 'admin' || currentUser.role === 'director')));
+      } else banner.classList.add('hidden');
+    }
+    function openAnnouncementModal(){ const ann = lsGet(K_ANNOUNCE); $('announcement-input').value = ann ? ann.text : ''; $('announcement-modal').classList.remove('hidden'); }
+    function closeAnnouncementModal(){ $('announcement-modal').classList.add('hidden'); }
+    async function saveAnnouncement(){
+      const val = $('announcement-input').value.trim();
+      if (!val) { await customAlert("Xatolik", "E'lon matnini yozing!", 'error'); return; }
+      lsSet(K_ANNOUNCE, { text: val, author: currentUser.name || 'Rahbariyat', time: nowHM() + ', ' + fmtDateUz(getTodayKey()) });
+      closeAnnouncementModal(); checkAnnouncement();
+      await customAlert("Yuborildi", "E'lon barchaga tarqatildi!", "success");
+    }
+    async function deleteAnnouncement(){
+      if (!await customConfirm("O'chirish", "E'lonni o'chirmoqchimisiz?", "bg-rose-600")) return;
+      lsSet(K_ANNOUNCE, null); checkAnnouncement();
+    }
+
+    function openChatModal(){ renderChatMessages(); $('chat-modal').classList.remove('hidden'); setTimeout(() => { $('chat-messages').scrollTop = $('chat-messages').scrollHeight; }, 50); }
+    function closeChatModal(){ $('chat-modal').classList.add('hidden'); }
+    function renderChatMessages(){
+      const box = $('chat-messages'), msgs = lsGet(K_CHAT) || [];
+      box.innerHTML = '';
+      if (!msgs.length) { box.innerHTML = '<p class="text-center text-xs text-slate-400 py-6">Xabarlar yo\'q.</p>'; return; }
+      msgs.forEach(m => {
+        const isMe = currentUser && currentUser.username === m.user;
+        const div = document.createElement('div');
+        div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+        div.innerHTML = `<div class="max-w-[82%] rounded-2xl p-3 ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'} shadow-sm text-xs"><p class="font-black text-[10px] ${isMe ? 'text-indigo-200' : 'text-slate-400'} mb-1">${esc(m.name)} (${esc(m.role)})</p><p class="font-medium whitespace-pre-line leading-relaxed">${esc(m.text)}</p><p class="text-[9px] text-right ${isMe ? 'text-indigo-200' : 'text-slate-400'} mt-1">${esc(m.time)}</p></div>`;
+        box.appendChild(div);
+      });
+    }
+    function sendChatMessage(e){
+      e.preventDefault();
+      const inp = $('chat-input'), txt = inp.value.trim();
+      if (!txt || !currentUser) return;
+      const msgs = lsGet(K_CHAT) || [];
+      const roleLabels = { owner: 'Owner', director: 'Direktor', admin: 'Admin', teacher: currentUser.class || 'O\'qituvchi' };
+      msgs.push({ user: currentUser.username, name: currentUser.name || '', role: roleLabels[currentUser.role] || '', text: txt, time: nowHM() });
+      lsSet(K_CHAT, msgs); inp.value = ''; renderChatMessages();
+      $('chat-messages').scrollTop = $('chat-messages').scrollHeight;
+    }
+
+    function openDevicesModal(){ if (currentUser) { renderDevicesList(); $('devices-modal').classList.remove('hidden'); } }
+    function closeDevicesModal(){ $('devices-modal').classList.add('hidden'); }
+    function renderDevicesList(){
+      const ul = $('devices-list'), myId = getThisDeviceId(), list = lsGet(K_DEVICES + currentUser.username) || [], now = Date.now(), ONE_HOUR = 3600000;
+      ul.innerHTML = '';
+      if (!list.length) { ul.innerHTML = '<li class="p-3 text-xs text-slate-400">Qurilma topilmadi.</li>'; return; }
+      list.forEach(d => {
+        const isCurrent = d.id === myId, diffMs = now - (d.connectedAt || now), canKick = diffMs >= ONE_HOUR, leftMin = Math.ceil((ONE_HOUR - diffMs) / 60000);
+        const li = document.createElement('li'); li.className = "py-3 flex items-center justify-between gap-2 text-xs";
+        li.innerHTML = `<div><p class="font-black text-slate-800 flex items-center gap-1.5"><span>${esc(d.name)}</span>${isCurrent ? '<span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-black">Shu qurilma</span>' : ''}</p><p class="text-[11px] text-slate-400 mt-0.5">Ulandi: ${new Date(d.connectedAt).toLocaleTimeString().slice(0,5)}</p>${!isCurrent && !canKick ? `<p class="text-[10px] font-bold text-amber-600 mt-0.5"><i class="fa-solid fa-clock"></i> Yana ${leftMin} daqiqa</p>` : ''}</div><div>${!isCurrent ? `<button type="button" onclick="kickDevice('${esc(d.id)}', ${canKick})" class="px-3 py-2 rounded-xl font-black text-xs ${canKick ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}">Chiqarish</button>` : ''}</div>`;
+        ul.appendChild(li);
+      });
+    }
+    async function kickDevice(id, canKick){
+      if (!canKick) { await customAlert("Xavfsizlik", "Qurilma ulangandan 1 soat o'tishi kerak!", 'warn'); return; }
+      if (!await customConfirm("Qurilmani uzish", "Qurilmani chiqarib tashlaysizmi?", "bg-rose-600")) return;
+      const k = K_DEVICES + currentUser.username;
+      lsSet(k, (lsGet(k) || []).filter(d => d.id !== id));
+      renderDevicesList();
+      await customAlert("Bajarildi", "Qurilma o'chirildi!", 'success');
+    }
+
+    async function clearAllAttendance(){
+      if (!await customConfirm("Tozalash", `${fmtDateUz(viewDate)} kunidagi davomatlarni tozalaysizmi?`, "bg-rose-600")) return;
+      localStorage.removeItem(K_ATT + viewDate); refreshDashboardViews();
+      await customAlert("Bajarildi", "Davomat tozalandi!", 'success');
+    }
+    async function exportToExcel(){
+      const att = getAttendanceStore(viewDate), users = getUsers(), studentsData = getStudents();
+      let csv = "\uFEFF";
+      Object.entries(users).filter(([l,u]) => u.role === 'teacher').forEach(([login,item]) => {
+        const cls = item.class || '', studs = studentsData[cls] || [], records = (att[cls] && att[cls].records) || {};
+        let yoq = [], sab = [];
+        studs.forEach(s => { const r = records[s.id]; if (r && r.status === 'yoq') yoq.push(s.name); else if (r && r.status === 'sababli') sab.push(`${s.name} (${r.reason || ''})`); });
+        csv += `Sinf: ${cls} (${item.shift || 1}-smena);Sinf rahbari: ${item.name || ''};Sana: ${viewDate}\nYO'Q (SABABSIZ);SABABLI\n`;
+        const max = Math.max(yoq.length, sab.length, 1);
+        for (let i = 0; i < max; i++) csv += `"${yoq[i] || ''}";"${sab[i] || ''}"\n`;
+        csv += `\n\n`;
+      });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      a.download = `davomat_${viewDate}.csv`; a.click();
+      await customAlert("Bajarildi", "Excel fayli yuklab olindi!", "success");
+    }
+
+    function openPwModal(){ $('pw-modal').classList.remove('hidden'); }
+    function closePwModal(){ $('pw-modal').classList.add('hidden'); }
+    async function savePassword(){
+      const pNew = $('pw-new').value, pNew2 = $('pw-new2').value;
+      if (!pNew || pNew.length < 6) { await customAlert("Xatolik", "Parol kamida 6 ta belgi bo'lsin!", 'warn'); return; }
+      if (pNew !== pNew2) { await customAlert("Xatolik", "Parollar bir xil emas!", 'error'); return; }
+      const users = getUsers(), me = users[currentUser.username];
+      if (me) { me.hash = hashPass(me.salt || currentUser.username, pNew); delete me.altHash; saveUsers(users); closePwModal(); await customAlert("Tayyor", "Parol almashtirildi!", 'success'); }
+    }
+    function togglePw(id){ const el = $(id); if (el) el.type = el.type === 'password' ? 'text' : 'password'; }
+
+    window.addEventListener('DOMContentLoaded', () => { getUsers(); getStudents(); autoLoginCheck(); checkAnnouncement(); });
+  </script>
+</body>
+</html>
